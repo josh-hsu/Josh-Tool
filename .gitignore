@@ -1,0 +1,3 @@
+#ignore gameapp folder
+gameapp/*
+app/src/*

@@ -1,0 +1,9 @@
+#
+# file_contexts
+#
+
+/system/bin/joshtool		u:object_r:joshtool_exec:s0
+/system/bin/input			u:object_r:joshtool_exec:s0
+/system/bin/screencap		u:object_r:joshtool_exec:s0
+/data/joshtool(/.*)?		u:object_r:joshtool:s0
+/data/internal.dump			u:object_r:joshtool:s0

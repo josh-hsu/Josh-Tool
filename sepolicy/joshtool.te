@@ -1,0 +1,32 @@
+type joshtool, domain;
+type joshtool_exec, exec_type, file_type;
+#init_daemon_domain(joshtool)
+#domain_trans(init, shell_exec, joshtool)
+
+allow joshtool dalvikcache_data_file:dir { rw_dir_perms };
+allow joshtool dalvikcache_data_file:file { rw_file_perms execute unlink };
+allow joshtool system_file:file { entrypoint r_file_perms execute_no_trans execute };
+allow joshtool joshtool_exec:file { entrypoint r_file_perms execute_no_trans execute };
+allow joshtool shell_exec:file { r_file_perms execute_no_trans execute };
+allow joshtool input_device:dir { r_dir_perms };
+allow joshtool input_device:file { r_file_perms };
+allow joshtool input_device:chr_file { r_file_perms };
+allow joshtool labeledfs:filesystem { associate };
+allow joshtool joshtool:file { rw_file_perms create };
+allow joshtool joshtool:dir { rw_dir_perms create };
+allow joshtool joshtool:capability { dac_override fsetid };
+allow joshtool joshtool:process { ptrace };
+allow joshtool proc:file { r_file_perms write };
+allow joshtool system_data_file:dir { rw_dir_perms };
+allow joshtool system_data_file:file { rw_file_perms create };
+allow joshtool zygote_exec:file { r_file_perms execute_no_trans execute };
+allow joshtool sysfs:file { rw_file_perms };
+allow joshtool su:unix_stream_socket { connectto };
+allow joshtool servicemanager:binder { call };
+allow joshtool servicemanager:dir { r_dir_perms };
+allow joshtool servicemanager:file { rw_file_perms };
+allow joshtool surfaceflinger:binder { call transfer };
+allow joshtool surfaceflinger:fd { use };
+allow joshtool system_server:binder { call };
+allow joshtool graphics_device:dir { create setattr rw_dir_perms search };
+allow joshtool graphics_device:chr_file { r_file_perms };

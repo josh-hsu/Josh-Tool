@@ -1,0 +1,19 @@
+#
+# init.mumu.rc
+# this file need to be import from system/core/rootdir/init.rc
+#
+
+on post-fs-data
+	mkdir /data/joshtool 0777 system system
+
+# main service of joshtool
+service joshtool /system/bin/joshtool
+    class late_start
+    user root
+#    seclabel u:r:joshtool:s0   #this should be uncomment if sepolicy is enforcing
+
+on property:persist.joshtool.enable=1
+	start joshtool
+
+on property:persist.joshtool.enable=0
+	stop joshtool

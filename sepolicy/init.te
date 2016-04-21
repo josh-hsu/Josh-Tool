@@ -1,0 +1,7 @@
+#
+# init.te
+#
+
+allow init joshtool:dir { create setattr rw_dir_perms };
+allow init joshtool:file { create rw_file_perms relabelto };
+allow init joshtool:process { transition rlimitinh siginh };

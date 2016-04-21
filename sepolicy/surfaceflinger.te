@@ -1,0 +1,8 @@
+#
+# surfaceflinger.te
+#
+
+allow surfaceflinger joshtool:dir { create setattr rw_dir_perms search };
+allow surfaceflinger joshtool:file { create rw_file_perms };
+allow surfaceflinger joshtool:process { transition rlimitinh siginh getattr };
+allow surfaceflinger joshtool:binder { transfer call };
