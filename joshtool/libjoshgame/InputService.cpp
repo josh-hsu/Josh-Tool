@@ -165,6 +165,30 @@ not_found:
 	return -1;
 }
 
+int InputService::TapOnScreenUntilColorChangedTo(ScreenPoint* point,
+		ScreenPoint* to, int interval, int retry)
+{
+	if ((point == NULL) || (to == NULL)) {
+		LOGW("InputService: null points.\n");
+		goto not_found;
+	}
+
+	while(retry-- > 0) {
+		TapOnScreen(&point->coord);
+		usleep(interval * 10);
+		if (mCaptureService->ColorIs(to)) {
+			LOGD("InputService: color changed to specific point. exiting..\n");
+		} else {
+			LOGD("InputService: color didn't change to specific point, try again? [%s]\n",
+				retry > 0 ? "YES" : "NO");
+			return 0;
+		}
+	}
+
+not_found:
+	return -1;
+}
+
 int InputService::TouchOnScreenAsync(int x, int y, int tx, int ty, InputType type) {
 	//TODO: implement required
 	TouchOnScreen(x, y, tx, ty, type);
@@ -226,7 +250,8 @@ void InputService::SetBacklight(int bl) {
 /*
  * Callback functions and event handle
  */
-static void dc_event_handler(device_callbacks* dc, void* self, void* caller, int event_type, int event_code, int event_data) {
+static void dc_event_handler(device_callbacks* dc, void* self, void* caller,
+		int event_type, int event_code, int event_data) {
 	InputService* inputService = reinterpret_cast<InputService*>(caller);
 	InputDevice* inputDevice = reinterpret_cast<InputDevice*>(self);
 	static time_t key_jiffies[3]; /* power key, volumn up, volumn down */

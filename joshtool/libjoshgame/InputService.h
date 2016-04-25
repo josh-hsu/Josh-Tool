@@ -89,6 +89,8 @@ class InputService {
 	int TouchOnScreenAsync(int x, int y, int tx, int ty, InputType type);
 	int TapOnScreen(ScreenCoord* coord1);
 	int TapOnScreenUntilColorChanged(ScreenPoint* point, int interval, int retry);
+	int TapOnScreenUntilColorChangedTo(ScreenPoint* point,
+			ScreenPoint* to, int interval, int retry);
 
 	// button key functions
 	int PressButtonKey(KeyType type);
