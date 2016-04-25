@@ -39,8 +39,8 @@ static bool event_handle_in_progress = false;
 CoreService* mCoreService;
 InputService* mInputService;
 CaptureService *mCaptureService;
-SevenKnight *mSevenKnight;
-GameJobMap *mSevenKnightJobMap;
+SevenKnight *mGameModule;
+GameJobMap *mGameJobMap;
 
 /* callbacks */
 void ic_error_handler(input_callbacks* ic, ErrorType err);
@@ -107,22 +107,22 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 			event_handle_in_progress = true;
 			
 			stage = mCoreService->GetInt(BATTLE_STAGE, -1);
-			if (stage < 0 || stage >= mSevenKnightJobMap->jobCount) {
+			if (stage < 0 || stage >= mGameJobMap->jobCount) {
 				LOGD("No game stage set ... use 0 instead. \n");
-				LOGI("尚未設定遊戲場景，使用一般戰鬥");
+				LOGI("尚未工作，使用預設工作");
 				stage = 0;
 			} else {
 				LOGD("Going stage %d\n", stage);
 			}
 
-			if (mSevenKnight->GetJobStatus(stage) == CTS_RUNNING) {
+			if (mGameModule->GetJobStatus(stage) == CTS_RUNNING) {
 				/* kill the thread */
 				LOGD("Killing thread ... \n");
-				LOGI("結束自動戰鬥");
-				mSevenKnight->StopJob(stage);
+				LOGI("結束工作");
+				mGameModule->StopJob(stage);
 			} else {
-				LOGI("開始自動戰鬥");
-				mSevenKnight->StartJob(stage);
+				LOGI("開始執行工作");
+				mGameModule->StartJob(stage);
 			}
 			event_handle_in_progress = false;
 		}
@@ -163,7 +163,7 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		break;
 	case EVENT_POWER_KEY_PRESSED:
 		LOGD("power key hit.\n");
-		mSevenKnight->StopAllJobs();
+		mGameModule->StopAllJobs();
 		mInputService->ConfigTouchScreen(true);
 		break;
 	default:
@@ -190,8 +190,8 @@ void init(void)
 	mCaptureService = new CaptureService();
 	mCoreService = new CoreService();
 
-	mSevenKnight = new SevenKnight();
-	mSevenKnightJobMap = mSevenKnight->GetJobMap();
+	mGameModule = new SevenKnight();
+	mGameJobMap = mGameModule->GetJobMap();
 }
 
 void loop_forever(void)
