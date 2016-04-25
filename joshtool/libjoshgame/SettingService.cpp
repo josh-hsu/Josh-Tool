@@ -6,20 +6,20 @@
 #include <fcntl.h>
 #include <cstdlib>
 
-#include "CoreService.h"
+#include "SettingService.h"
 #include "AppOutput.h"
 
-CoreService::CoreService()
+SettingService::SettingService()
 {
-	LOGD("CoreService is preparing settings.\n");
+	LOGD("SettingService is preparing settings.\n");
 }
 
-void CoreService::PrepareSettings(void)
+void SettingService::PrepareSettings(void)
 {
 
 }
 
-void CoreService::GetNameFromSetting(Settings setting, char* file_name)
+void SettingService::GetNameFromSetting(Settings setting, char* file_name)
 {
 	if (setting > SETTINGS_MAX)
 		return;
@@ -99,7 +99,7 @@ void CoreService::GetNameFromSetting(Settings setting, char* file_name)
 	}
 }
 
-bool CoreService::GetBool(Settings setting, bool default_value)
+bool SettingService::GetBool(Settings setting, bool default_value)
 {
 	char filename[30];
 	char filepath[80];
@@ -123,7 +123,7 @@ bool CoreService::GetBool(Settings setting, bool default_value)
 	return false;
 }
 
-int CoreService::GetInt(Settings setting, int default_value)
+int SettingService::GetInt(Settings setting, int default_value)
 {
 	char filename[30];
 	char filepath[80];
@@ -149,7 +149,7 @@ int CoreService::GetInt(Settings setting, int default_value)
 	return atoi(data);
 }
 
-void CoreService::PlaySound(int i)
+void SettingService::PlaySound(int i)
 {
 	if (i == 1) {
 		std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/mp3\" -d \"file:///storage/sdcard0/Recorders/Mumu.mp3\"");

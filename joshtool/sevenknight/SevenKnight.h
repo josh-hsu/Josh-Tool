@@ -18,7 +18,7 @@ void pre_battle_setup(void);
 void post_battle_setup(void);
 void corethread_jobdone_callback(void);
 
-extern CoreService* mCoreService;
+extern SettingService* mSettingService;
 extern InputService* mInputService;
 extern CaptureService* mCaptureService;
 

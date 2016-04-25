@@ -3,10 +3,10 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
     CaptureService.cpp \
-    CoreService.cpp \
     CoreThread.cpp \
     InputDevice.cpp \
-    InputService.cpp
+    InputService.cpp \
+    SettingService.cpp
 
 LOCAL_MODULE := libjoshgame
 

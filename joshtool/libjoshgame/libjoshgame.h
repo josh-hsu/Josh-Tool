@@ -20,7 +20,7 @@
 #include "InputDevice.h"
 #include "InputService.h"
 #include "CaptureService.h"
-#include "CoreService.h"
+#include "SettingService.h"
 #include "CoreThread.h"
 #include "AppOutput.h"
 

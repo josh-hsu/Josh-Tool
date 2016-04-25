@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef _CORESERVICE_H_
-#define _CORESERVICE_H_
+#ifndef _SETTINGSERVICE_H_
+#define _SETTINGSERVICE_H_
 
 enum Settings {
 	SETTING_RING_TONE_1,
@@ -44,9 +44,9 @@ enum Settings {
 	SETTINGS_MAX
 };
 
-class CoreService {
+class SettingService {
   public:
-	CoreService();
+	SettingService();
 	
 	bool GetBool(Settings setting, bool default_value);
 	int GetInt(Settings setting, int default_value);

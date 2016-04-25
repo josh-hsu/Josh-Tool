@@ -151,19 +151,19 @@ void print_battle_state(void)
 	if(mCaptureService->ColorIs(&battleAutoOnPoint)) {
 		LOGD("Auto skill is ON.\n");
 		LOGI("自動技能打開中");
-		if (!mCoreService->GetBool(BATTLE_AUTO_ENABLE, false))
+		if (!mSettingService->GetBool(BATTLE_AUTO_ENABLE, false))
 			mInputService->TapOnScreen(&battleAutoOnPoint.coord);
 	} else if (mCaptureService->ColorIs(&battleAutoOffPoint)) {
 		LOGD("Auto skill is OFF.\n");
 		LOGI("自動技能關閉中");
-		if (mCoreService->GetBool(BATTLE_AUTO_ENABLE, false))
+		if (mSettingService->GetBool(BATTLE_AUTO_ENABLE, false))
 			mInputService->TapOnScreen(&battleAutoOnPoint.coord);
 	}
 
 	if(mCaptureService->ColorIs(&battleX2OffPoint)) {
 		LOGD("X2 has been disabled. Enable it now.\n");
 		LOGI("二倍速關閉中");
-		if (mCoreService->GetBool(BATTLE_2X_ENABLE, true))
+		if (mSettingService->GetBool(BATTLE_2X_ENABLE, true))
 			mInputService->TapOnScreen(&battleX2OffPoint.coord);
 	} else {
 		LOGD("X2 has been enabled.\n");
@@ -173,13 +173,13 @@ void print_battle_state(void)
 
 void pre_battle_setup(void)
 {
-	if (mCoreService->GetBool(BATTLE_SCREEN_DISABLE, false))
+	if (mSettingService->GetBool(BATTLE_SCREEN_DISABLE, false))
 		mInputService->SetBacklight(0);
 
-	if (mCoreService->GetBool(BATTLE_TOUCH_DISABLE, false))
+	if (mSettingService->GetBool(BATTLE_TOUCH_DISABLE, false))
 		mInputService->ConfigTouchScreen(false);
 
-	if (mCoreService->GetBool(BATTLE_SENSOR_DISABLE, true))
+	if (mSettingService->GetBool(BATTLE_SENSOR_DISABLE, true))
 		mInputService->ConfigGyroSensor(false);
 }
 
@@ -386,10 +386,10 @@ void* keep_next_region_battle(void* data)
 	int skill_1, skill_2, skill_3;
 
 	/* Get default settings */
-	battle_team = mCoreService->GetInt(BATTLE_NORMAL_TEAM, -1);
-	skill_1 = mCoreService->GetInt(BATTLE_NORMAL_SKILL_1, 4);
-	skill_2 = mCoreService->GetInt(BATTLE_NORMAL_SKILL_2, 2);
-	skill_3 = mCoreService->GetInt(BATTLE_NORMAL_SKILL_3, 1);
+	battle_team = mSettingService->GetInt(BATTLE_NORMAL_TEAM, -1);
+	skill_1 = mSettingService->GetInt(BATTLE_NORMAL_SKILL_1, 4);
+	skill_2 = mSettingService->GetInt(BATTLE_NORMAL_SKILL_2, 2);
+	skill_3 = mSettingService->GetInt(BATTLE_NORMAL_SKILL_3, 1);
 
 	while(true) {
 start_noraml:
@@ -405,7 +405,7 @@ start_noraml:
 		/* check if max battle is achieved then switch hero if enabled */
 		if (max_battle_round <= 0) {
 			/* changing hero if enabled */
-			if (mCoreService->GetBool(BATTLE_CHANGE_HERO, false)) {
+			if (mSettingService->GetBool(BATTLE_CHANGE_HERO, false)) {
 				LOGD("change hero enabled, checking ... \n");
 				sleep(2); //Prevent laggy device crashed
 				ret = change_hero();
@@ -511,11 +511,11 @@ normal_end:
 	return NULL;
 
 fail_end_0:
-	mCoreService->PlaySound(0);
+	mSettingService->PlaySound(0);
 	return NULL;
 
 fail_end_1:
-	mCoreService->PlaySound(1);
+	mSettingService->PlaySound(1);
 	return NULL;
 }
 
@@ -563,11 +563,11 @@ normal_end:
 	return NULL;
 
 fail_end_0:
-	mCoreService->PlaySound(0);
+	mSettingService->PlaySound(0);
 	return NULL;
 
 fail_end_1:
-	mCoreService->PlaySound(1);
+	mSettingService->PlaySound(1);
 	return NULL;
 }
 

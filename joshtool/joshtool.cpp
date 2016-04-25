@@ -36,7 +36,7 @@
 bool capture_mode_enable = false;
 static bool event_handle_in_progress = false;
 
-CoreService* mCoreService;
+SettingService* mSettingService;
 InputService* mInputService;
 CaptureService *mCaptureService;
 SevenKnight *mGameModule;
@@ -106,7 +106,7 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		} else if (!event_handle_in_progress) {
 			event_handle_in_progress = true;
 			
-			stage = mCoreService->GetInt(BATTLE_STAGE, -1);
+			stage = mSettingService->GetInt(BATTLE_STAGE, -1);
 			if (stage < 0 || stage >= mGameJobMap->jobCount) {
 				LOGD("No game stage set ... use 0 instead. \n");
 				LOGI("尚未工作，使用預設工作");
@@ -177,7 +177,7 @@ void dump_screen(void)
 	static int i = 0;
 	char filename[100];
 	
-	snprintf(filename, 100, "/data/joshtool/%d.dump", i++);
+	snprintf(filename, 100, "/data/media/0/%d.dump", i++);
 	mCaptureService->DumpScreen(filename);
 }
 
@@ -188,7 +188,7 @@ void init(void)
 	mInputService->SetCallback(&mInputCallbacks);
 
 	mCaptureService = new CaptureService();
-	mCoreService = new CoreService();
+	mSettingService = new SettingService();
 
 	mGameModule = new SevenKnight();
 	mGameJobMap = mGameModule->GetJobMap();
