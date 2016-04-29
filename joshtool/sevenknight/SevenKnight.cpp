@@ -436,7 +436,7 @@ start_noraml:
 
 		/* Tap enter battle */
 		mInputService->TapOnScreen(&prepareNormalButtonPoint.coord);
-		ret = mInputService->TapOnScreenUntilColorChanged(&prepareNormalButtonPoint, 2, 5);
+		ret = mInputService->TapOnScreenUntilColorChanged(&prepareNormalButtonPoint, 4, 6);
 		if (ret < 0) {
 			LOGW("Start battle failed, connection issue?\n");
 			LOGI("開始戰鬥失敗-連線問題?");
@@ -449,7 +449,7 @@ start_noraml:
 			goto fail_end_0;
 		}
 
-		ret = mCaptureService->WaitOnColor(&battlePauseButtonPoint.color, &battlePauseButtonPoint.coord, 20);
+		ret = mCaptureService->WaitOnColor(&battleNormalPauseButtonPoint.color, &battleNormalPauseButtonPoint.coord, 20);
 		if (ret < 0) {
 			LOGW("Cannot enter battle screen. \n");
 			LOGI("無法進入戰鬥畫面");
@@ -473,7 +473,7 @@ start_noraml:
 		/* wait until battle finished */
 		LOGI("等待戰鬥結束");
 wait_battle:
-		ret = mCaptureService->WaitOnColorNotEqual(&battlePauseButtonPoint.color, &battlePauseButtonPoint.coord, 1000);
+		ret = mCaptureService->WaitOnColorNotEqual(&battleNormalPauseButtonPoint.color, &battleNormalPauseButtonPoint.coord, 1000);
 
 		if (ret < 0) {
 			LOGW("Battle timeout. \n");
@@ -483,14 +483,14 @@ wait_battle:
 
 		/* This could be temprarely missing */
 		sleep(3);
-		if (mCaptureService->ColorIs(&battlePauseButtonPoint)) {
+		if (mCaptureService->ColorIs(&battleNormalPauseButtonPoint)) {
 			goto wait_battle;
 		}
 
 		LOGD("Battle finished, waiting for result.\n");
 		LOGI("戰鬥完成等待結果");
 
-		ret = mCaptureService->WaitOnColor(&resultHeroButtonPoint.color, &resultHeroButtonPoint.coord, 500);
+		ret = mCaptureService->WaitOnColor(&resultNormalMapButtonPoint.color, &resultNormalMapButtonPoint.coord, 500);
 		if (ret < 0) {
 			LOGW("Result doesn't show up... \n");
 			LOGI("戰鬥結果未出現");

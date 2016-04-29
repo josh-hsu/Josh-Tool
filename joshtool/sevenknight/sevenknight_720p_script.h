@@ -105,6 +105,8 @@ struct ScreenPoint prepareFailNoSilverKeyPoint; // Normal
 
 // In battle state
 struct ScreenPoint battleBarPoint = {{692, 541, SO_Portrait}, {0xF7, 0xE3, 0x19, 0x00}};
+struct ScreenPoint battleNormalPauseButtonPoint = {{607, 1170, SO_Portrait}, {0xBD, 0xAA, 0x63, 0x00}};
+struct ScreenPoint battleNormalMessageButtonPoint = {{599, 1218, SO_Portrait}, {0x4A, 0x20, 0x10, 0x00}};
 struct ScreenPoint battlePauseButtonPoint = {{671, 1149, SO_Portrait}, {0xB5, 0x9A, 0x52, 0x00}};
 struct ScreenPoint battleMessageButtonPoint = {{681, 1233, SO_Portrait}, {0xD6, 0xC2, 0x7B, 0x00}};
 struct ScreenPoint battleAutoOnPoint = {{73, 165, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
@@ -131,18 +133,15 @@ struct ScreenPoint battleSkill[10] = {battleSkill1, battleSkill2, battleSkill3, 
 
 
 // Result state
-// === Universe ===
-struct ScreenPoint resultHeroButtonPoint     = {{44,  67,   SO_Portrait}, {0xF7, 0xCE, 0xAD, 0x00}};
-struct ScreenPoint resultVillegeButtonPoint  = {{68,  1187, SO_Portrait}, {0xF7, 0xD7, 0x6B, 0x00}};
-
 // === Inifinity tower ===
+struct ScreenPoint resultHeroButtonPoint     = {{44,  67,   SO_Portrait}, {0xF7, 0xCE, 0xAD, 0x00}};
 struct ScreenPoint resultInfiniteButtonPoint = {{211, 1177, SO_Portrait}, {0xEF, 0xD2, 0x6B, 0x00}};
 struct ScreenPoint resultInfiniteAgainButtonPoint = {{374, 1180, SO_Portrait}, {0x5A, 0x24, 0x10, 0x00}};
 
 // === Normal game ===
-struct ScreenPoint resultMapButtonPoint = {{232, 1181, SO_Portrait}, {0x8C, 0x69, 0x31, 0x00}};
-struct ScreenPoint resultNextRegionButtonPoint = {{373, 1172, SO_Portrait}, {0xEF, 0xCA, 0x63, 0x00}};
-struct ScreenPoint resultNormalAgainButtonPoint = {{514, 1155, SO_Portrait}, {0xF7, 0xD7, 0x6B, 0x00}};
-struct ScreenPoint resultNormalQuickAgainButtonPoint = {{89, 1040, SO_Portrait}, {0xEE, 0xD2, 0x6B, 0x00}};
-
+struct ScreenPoint resultNormalAgainButtonPoint = {{512, 1149, SO_Portrait}, {0xF7, 0xD7, 0x6B, 0x00}};
+struct ScreenPoint resultNormalNextRegionButtonPoint = {{383, 1152, SO_Portrait}, {0xAD, 0x81, 0x31, 0x00}};
+struct ScreenPoint resultNormalMapButtonPoint = {{210, 1170, SO_Portrait}, {0xCE, 0xB2, 0x6B, 0x00}};
+struct ScreenPoint resultNormalVillegeButtonPoint  = {{89,  1167, SO_Portrait}, {0x7B, 0x51, 0x10, 0x00}};
+struct ScreenPoint resultNormalQuickAgainButtonPoint = {{94, 1016, SO_Portrait}, {0xB5, 0x7D, 0x3A, 0x00}};
 
