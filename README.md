@@ -4,7 +4,7 @@ Josh-Tool is an Android based native game automation framework for developers. W
 
 ## Use binary directly
 
-You can use prebuilt binary if you have your own phone rooted.
+You can use prebuilt binary if you have your own phone rooted or unlocked.
 
 * Go to joshtool folder and download joshtool binary
 * put it in your /system/bin folder, You might need to remount your system partition
@@ -12,10 +12,10 @@ You can use prebuilt binary if you have your own phone rooted.
 ```shell
     adb shell
     su
-    mount -o rw,remount system
+    mount -o rw,remount /system
 ```
 
-* Remember to set SEPolicy to permissive mode
+* Remember to set SEPolicy to permissive mode if necessary
 
 ## Setup the build
 
