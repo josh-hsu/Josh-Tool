@@ -93,7 +93,7 @@ int CaptureService::WaitOnColor(ScreenColor* sc, ScreenCoord* coord, int thres)
 			LOGD("CaptureService: Matched! \n");
 			return 0;
 		} else {
-			usleep(100);
+			usleep(100*1000);
 		}
 	}
 

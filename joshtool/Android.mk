@@ -19,7 +19,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
     joshtool.cpp \
-    sevenknight/SevenKnight.cpp
+    fgo/FGO.cpp
 
 LOCAL_MODULE := joshtool
 

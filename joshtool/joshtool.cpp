@@ -31,7 +31,7 @@
 #include <cstdlib>
 
 #include "libjoshgame/libjoshgame.h"
-#include "sevenknight/SevenKnight.h"
+#include "fgo/FGO.h"
 
 bool capture_mode_enable = false;
 static bool event_handle_in_progress = false;
@@ -39,8 +39,8 @@ static bool event_handle_in_progress = false;
 SettingService* mSettingService;
 InputService* mInputService;
 CaptureService *mCaptureService;
-SevenKnight *mGameModule;
-GameJobMap *mGameJobMap;
+FGO *mFGO;
+GameJobMap *mFGOJobMap;
 
 /* callbacks */
 void ic_error_handler(input_callbacks* ic, ErrorType err);
@@ -105,25 +105,10 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 			break;
 		} else if (!event_handle_in_progress) {
 			event_handle_in_progress = true;
-			
-			stage = mSettingService->GetInt(BATTLE_STAGE, -1);
-			if (stage < 0 || stage >= mGameJobMap->jobCount) {
-				LOGD("No game stage set ... use 0 instead. \n");
-				LOGI("尚未工作，使用預設工作");
-				stage = 0;
-			} else {
-				LOGD("Going stage %d\n", stage);
-			}
 
-			if (mGameModule->GetJobStatus(stage) == CTS_RUNNING) {
-				/* kill the thread */
-				LOGD("Killing thread ... \n");
-				LOGI("結束工作");
-				mGameModule->StopJob(stage);
-			} else {
-				LOGI("開始執行工作");
-				mGameModule->StartJob(stage);
-			}
+			//job here
+			mFGO->StartJob(0);
+
 			event_handle_in_progress = false;
 		}
 
@@ -138,14 +123,8 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		} else if (!event_handle_in_progress) {
 			event_handle_in_progress = true;
 
-			/* do thing here */
-			if (enable_screen) {
-				mInputService->SetBacklight(0);
-				enable_screen = false;
-			} else {
-				mInputService->SetBacklight(12);
-				enable_screen = true;
-			}
+			// job here
+			mFGO->StartJob(0);
 
 			event_handle_in_progress = false;
 		}
@@ -163,7 +142,7 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		break;
 	case EVENT_POWER_KEY_PRESSED:
 		LOGD("power key hit.\n");
-		mGameModule->StopAllJobs();
+		mFGO->StopJob(0);
 		mInputService->ConfigTouchScreen(true);
 		break;
 	default:
@@ -177,7 +156,7 @@ void dump_screen(void)
 	static int i = 0;
 	char filename[100];
 	
-	snprintf(filename, 100, "/data/media/0/%d.dump", i++);
+	snprintf(filename, 100, "/data/joshtool/%d.dump", i++);
 	mCaptureService->DumpScreen(filename);
 }
 
@@ -190,8 +169,8 @@ void init(void)
 	mCaptureService = new CaptureService();
 	mSettingService = new SettingService();
 
-	mGameModule = new SevenKnight();
-	mGameJobMap = mGameModule->GetJobMap();
+	mFGO = new FGO();
+	mFGOJobMap = mFGO->GetJobMap();
 }
 
 void loop_forever(void)

@@ -206,6 +206,16 @@ int InputService::PressButtonKeyAsync(KeyType type) {
 	return 0;
 }
 
+// input text function
+void InputService::InputText(char* text)
+{
+	char text_command[100];
+
+	snprintf(text_command, 100, "input text %s", text);
+	std::system(text_command);
+	usleep(10);
+}
+
 // test functions
 void InputService::TestInputService(void) {
 	

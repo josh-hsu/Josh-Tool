@@ -96,6 +96,9 @@ class InputService {
 	int PressButtonKey(KeyType type);
 	int PressButtonKeyAsync(KeyType type);
 
+	// input text function
+	void InputText(char* text);
+
 	// test functions
 	void TestInputService(void);
 	void TestInputServiceSchedule(int interval);
