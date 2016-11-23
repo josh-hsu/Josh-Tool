@@ -48,9 +48,11 @@ enum CallbackEvent {
 	EVENT_VOLUMN_UP_PRESSED,
 	EVENT_VOLUMN_UP_DOUBLE_PRESSED,
 	EVENT_VOLUMN_UP_LONG_PRESSED,
+	EVENT_VOLUMN_UP_LONG_LONG_PRESSED,
 	EVENT_VOLUMN_DOWN_PRESSED,
 	EVENT_VOLUMN_DOWN_DOUBLE_PRESSED,
 	EVENT_VOLUMN_DOWN_LONG_PRESSED,
+	EVENT_VOLUMN_DOWN_LONG_LONG_PRESSED,
 	EVENT_VOLUMN_ALL_PRESSED,
 	EVENT_POWER_KEY_PRESSED,
 	EVENT_POWER_KEY_LONG_PRESSED,
@@ -88,6 +90,8 @@ class InputService {
 	int TouchOnScreen(int x, int y, int tx, int ty, InputType type);
 	int TouchOnScreenAsync(int x, int y, int tx, int ty, InputType type);
 	int TapOnScreen(ScreenCoord* coord1);
+	int TapOnScreen(ScreenCoord* coord1, int drift);
+	int TapOnScreen(ScreenCoord* coord1, int drift_x, int drift_y);
 	int TapOnScreenUntilColorChanged(ScreenPoint* point, int interval, int retry);
 	int TapOnScreenUntilColorChangedTo(ScreenPoint* point,
 			ScreenPoint* to, int interval, int retry);

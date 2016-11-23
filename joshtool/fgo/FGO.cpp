@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 ASUSTek Computer Inc.
+ * Copyright (C) 2016 Josh Tool Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ FGO::FGO() {
 	mGameJob[0].jobName = "main_job";
 	mGameJob[1].jobThread = mXAThread;
 	mGameJob[1].jobName = "main_job";
-	
+
 	/* initial GameJobMap */
 	mJobIdd[0].index = 0;
 	mJobIdd[0].jobName = "job_0";
@@ -85,7 +85,7 @@ void FGO::StartJob(int index)
 	if (IsIndexLegal(index)) {
 		GetJobByIndex(index)->jobThread->Start(CT_FOREVER);
 	} else
-		LOGE("Index %d of game is not legal\n", index);
+		LOGE("Index %d of game is not legal", index);
 }
 
 void FGO::StopJob(GameJob* job)
@@ -98,7 +98,7 @@ void FGO::StopJob(int index)
 	if (IsIndexLegal(index)) {
 		GetJobByIndex(index)->jobThread->Stop();
 	} else
-		LOGE("Index %d of game is not legal\n", index);
+		LOGE("Index %d of game is not legal", index);
 }
 
 void FGO::StopAllJobs(void)
@@ -124,7 +124,18 @@ CoreThreadStatus FGO::GetJobStatus(int index)
 
 void corethread_jobdone_callback(void)
 {
-	LOGD("CoreThread job is done.\n");
+	LOGD("CoreThread job is done.");
+}
+
+static void gen_random(char *s, const int len) {
+	static const char alphanum[] =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	for (int i = 0; i < len; ++i) {
+		s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+	}
+
+	s[len] = 0;
 }
 
 /*=====================
@@ -135,22 +146,42 @@ void corethread_jobdone_callback(void)
  */
 int check_for_skip(void)
 {
-	if (mCaptureService->WaitOnColor(&skipButtonPoint, 200) < 0) {
-		LOGW("skip not found.\n");
-		goto error;
-	}
+	int max_skip_check = 5;
 
-	sleep(7);
-	if (mCaptureService->WaitOnColor(&skipButtonPoint, 200) < 0) {
-		LOGW("skip not found.\n");
+check_again:
+	if (mCaptureService->WaitOnColor(&skipButtonPoint, 20) < 0) {
+		LOGW("skip not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&skipButtonPoint.coord);
-	if (mCaptureService->WaitOnColor(&confirmSkipButtonPoint, 50) < 0) {
-		LOGW("skip confirm not found.\n");
-		goto error;
+	LOGD("skip found.");
+
+	if (mCaptureService->WaitOnColorKindOf(&skipTextPoint, 15, 0x10) < 0) {
+		if (max_skip_check-- > 0) {
+			LOGW("skip text not found, check again.");
+			goto check_again;
+		} else {
+			LOGW("can not find skip text in max check time.");
+			goto error;
+		}
 	}
-	mInputService->TapOnScreen(&confirmSkipButtonPoint.coord);
+	LOGD("skip text found, can press it");
+
+press_again:
+	max_skip_check = 3;
+	mInputService->TapOnScreen(&skipButtonPoint.coord, 3);
+	mInputService->TapOnScreen(&skipButtonPoint.coord, 3);
+
+	if (mCaptureService->WaitOnColor(&confirmSkipButtonPoint, 10) < 0) {
+		if (max_skip_check-- > 0) {
+			LOGW("confirm skip button not found, press skip again.");
+			goto press_again;
+		} else {
+			LOGW("skip confirm not found.");
+			goto error;
+		}
+	}
+	mInputService->TapOnScreen(&confirmSkipButtonPoint.coord, 4);
+	LOGD("confirm pressed.");
 	return 0;
 
 error:
@@ -169,18 +200,20 @@ error:
 int battle_once(int session)
 {
 	if (session == 4) {
-		sleep(1);
+		if (mCaptureService->WaitOnColor(&tapMosterTextPoint, 10) < 0) {
+			LOGW("cannot tap moster to switch them. do it anyway.");
+		}
 		mInputService->TapOnScreen(&tapMosterTextPoint.coord);
+		sleep(1);
 		mInputService->TapOnScreen(&tapMosterButtonPoint.coord);
-		sleep(2);
 	}
 
-	if (mCaptureService->WaitOnColor(&drawCardButtonPoint, 200) < 0) {
-		LOGW("draw card battle button not found.\n");
+	if (mCaptureService->WaitOnColor(&drawCardButtonPoint, 80) < 0) {
+		LOGW("draw card battle button not found.");
 		goto error;
 	}
 
-	mInputService->TapOnScreen(&drawCardButtonPoint.coord);
+	mInputService->TapOnScreen(&drawCardButtonPoint.coord, 13);
 	sleep(2);
 	if (session == 1) {
 		if (mCaptureService->ColorIs(&touchDismissButtonPoint))
@@ -190,7 +223,7 @@ int battle_once(int session)
 
 	if (session == 3) {
 		sleep(1);
-		mInputService->TapOnScreen(&speedUpButtonPoint.coord);
+		mInputService->TapOnScreen(&speedUpButtonPoint.coord, 3);
 		sleep(2);
 	}
 
@@ -202,16 +235,17 @@ int battle_once(int session)
 	}
 
 	if (session != 2) {
-		mInputService->TapOnScreen(&card1ButtonPoint.coord);
-		mInputService->TapOnScreen(&card2ButtonPoint.coord);
-		mInputService->TapOnScreen(&card3ButtonPoint.coord);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
 	} else {
-		mInputService->TapOnScreen(&royalCardButtonPoint.coord);
-		mInputService->TapOnScreen(&card1ButtonPoint.coord);
-		mInputService->TapOnScreen(&card2ButtonPoint.coord);
+		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 	}
+	LOGD("battle once done");
 	return 0;
-	
+
 error:
 	return -1;
 }
@@ -221,43 +255,45 @@ error:
  */
 int battle_till_finish(ScreenPoint* match)
 {
-	int max_battle_round = 10;
+	int battle_time_second = 120;
 	int ret = 0;
 
-retry:
-	while(!mCaptureService->ColorIs(match) && max_battle_round > 0) {
-		if (mCaptureService->WaitOnColor(&drawCardButtonPoint, 100) < 0) {
-			LOGW("draw card battle button not found.\n");
-			sleep(5);
-			max_battle_round--;
-			goto retry;
+	LOGD("battle till finish +++ ");
+	while(battle_time_second > 0) {
+		if (mCaptureService->ColorIs(&drawCardButtonPoint)) {
+			//battle point
+			mInputService->TapOnScreen(&drawCardButtonPoint.coord, 15);
+			sleep(2);
+
+			mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+			mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+			mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
+			battle_time_second = 120;
+		} else if (mCaptureService->ColorIs(match)) {
+			goto battle_done;
 		}
-		mInputService->TapOnScreen(&drawCardButtonPoint.coord);
-		sleep(2);
-
-		mInputService->TapOnScreen(&card1ButtonPoint.coord);
-		mInputService->TapOnScreen(&card2ButtonPoint.coord);
-		mInputService->TapOnScreen(&card3ButtonPoint.coord);
-
-		sleep(10);
-		max_battle_round--;
-	}
-
-	if (max_battle_round <= 0)
-		return -1;
-
-	//matched!
-	LOGD("dismiss battle result\n");
-	max_battle_round = 8;
-	while(!mCaptureService->ColorIs(&nextButtonPoint) && max_battle_round >0) {
-		mInputService->TapOnScreen(&bondButtonPoint.coord);
+		battle_time_second--;
 		sleep(1);
-		max_battle_round--;
 	}
 
-	mInputService->TapOnScreen(&nextButtonPoint.coord);
+	if (battle_time_second <= 0) {
+		LOGW("Battle timeout!");
+		return -1;
+	}
 
-	LOGD("battle till finished\n");
+battle_done:
+	//matched!
+	LOGD("dismiss battle result");
+	battle_time_second = 12;
+	while(!mCaptureService->ColorIs(&nextButtonPoint) && battle_time_second >0) {
+		mInputService->TapOnScreen(&bondButtonPoint.coord, 40);
+		sleep(1);
+		battle_time_second--;
+	}
+
+	mInputService->TapOnScreen(&nextButtonPoint.coord, 5, 2);
+
+	LOGD("battle till finished --- ");
 	return 0;
 }
 
@@ -270,17 +306,17 @@ retry:
 int intro_presetup(void)
 {
 	if (mCaptureService->WaitOnColor(&homePageButtonPoint, 50) < 0) {
-		LOGW("not in home page.\n");
+		LOGW("not in home page.");
 		goto error;
 	}
 
 	// tap on screen to create an id
-	mInputService->TapOnScreen(&homePageButtonPoint.coord);
+	mInputService->TapOnScreen(&homePageButtonPoint.coord, 5);
 
 	if (mCaptureService->WaitOnColor(&agreementButtonPoint, 50) < 0) {
-		LOGW("agreement not shown.\n");
+		LOGW("agreement not shown.");
 	} else {
-		mInputService->TapOnScreen(&agreementButtonPoint.coord);
+		mInputService->TapOnScreen(&agreementButtonPoint.coord, 3);
 	}
 
 	return 0;
@@ -298,28 +334,26 @@ int intro_battle(void)
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(20);
+	sleep(5);
 
 	ret = battle_once(0);
 	if (ret < 0) goto error;
-	sleep(12);
+
 	ret = battle_once(0);
 	if (ret < 0) goto error;
-	sleep(12);
+
 	ret = battle_once(0);
 	if (ret < 0) goto error;
-	sleep(12);
+
 	ret = battle_once(1);
 	if (ret < 0) goto error;
-	sleep(12);
+
 	ret = battle_once(2);
 	if (ret < 0) goto error;
-	sleep(20);
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(13);
-	
+
 	return 0;
 error:
 	return -1;
@@ -328,26 +362,27 @@ error:
 int create_character(void)
 {
 	int ret;
+	char name[8];
+
+	gen_random(name, 7);
+
 	if (mCaptureService->WaitOnColor(&touchNameButtonPoint, 50) < 0) {
-		LOGW("name field button not found.\n");
+		LOGW("name field button not found.");
 		goto error;
 	}
-
 	mInputService->TapOnScreen(&touchNameButtonPoint.coord);
-	sleep(5);
-	mInputService->InputText("MUMU");
-	sleep(5);
+	sleep(3);
+	mInputService->InputText(name);
+	sleep(3);
 	mInputService->TapOnScreen(&returnButtonPoint.coord);
-	sleep(4);
+	sleep(3);
 	// confrim
 	mInputService->TapOnScreen(&enterNameButtonPoint.coord);
-	sleep(4);
+	sleep(3);
 	mInputService->TapOnScreen(&confirmNameButtonPoint.coord);
 
-	sleep(10);
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(20);
 
 	return 0;
 
@@ -362,57 +397,55 @@ int XA_battle(void)
 {
 	int ret = 0;
 
-	if (mCaptureService->WaitOnColor(&enterZone1ButtonPoint, 10) < 0) {
-		LOGW("zone 1 button not found.\n");
+	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
+		LOGW("not in zone selection.");
 		goto error;
 	}
 	mInputService->TapOnScreen(&enterZone1ButtonPoint.coord);
 	sleep(2);
 
 	if (mCaptureService->WaitOnColor(&enterZone1SubButtonPoint, 10) < 0) {
-		LOGW("zone 1 sub button not found.\n");
+		LOGW("zone 1 sub button not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&enterZone1SubButtonPoint.coord);
+	mInputService->TapOnScreen(&enterZone1SubButtonPoint.coord, 2, 5);
 	sleep(5);
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(30);
 
 	ret = battle_once(0);
 	if (ret < 0) goto error;
-	sleep(18);
+	sleep(20);
 
 	// wait for skill tutor
-	if (mCaptureService->WaitOnColor(&skillTutorTextPoint, 10) < 0) {
-		LOGW("zone 1 sub button not found.\n");
+	if (mCaptureService->WaitOnColor(&skillTutorTextPoint, 30) < 0) {
+		LOGW("skill tutor button not found.");
 		goto error;
 	}
+	sleep(1);
 	mInputService->TapOnScreen(&skill1ButtonPoint.coord);
 	sleep(2);
-	mInputService->TapOnScreen(&useSkillButtonPoint.coord);
+	mInputService->TapOnScreen(&useSkillButtonPoint.coord, 3);
 	sleep(2);
-	mInputService->TapOnScreen(&skillTargetButtonPoint.coord);
+	mInputService->TapOnScreen(&skillTargetButtonPoint.coord, 5);
 	sleep(2);
 
 	ret = battle_once(3);
 	if (ret < 0) goto error;
-	sleep(18);
 
 	ret = battle_till_finish(&bondButtonPoint);
 	if (ret < 0) goto error;
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(24);
 
 	// wait for magic stone
-	if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 10) < 0) {
-		LOGW("magic stone button not found.\n");
+	if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 30) < 0) {
+		LOGW("magic stone button not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&magicStoneButtonPoint.coord);
+	mInputService->TapOnScreen(&magicStoneButtonPoint.coord, 20);
 	return 0;
 
 error:
@@ -426,41 +459,46 @@ int XB_battle(void)
 {
 	int ret = 0;
 
-	if (mCaptureService->WaitOnColor(&enterZone2ButtonPoint, 40) < 0) {
-		LOGW("zone 2 button not found.\n");
+	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
+		LOGW("not in zone selection.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&enterZone2ButtonPoint.coord);
 	sleep(2);
+	mInputService->TapOnScreen(&enterZone2ButtonPoint.coord);
 
-	mInputService->TapOnScreen(&enterZone2SubButtonPoint.coord);
-	sleep(9);
+	if (mCaptureService->WaitOnColor(&enterZone2SubButtonPoint, 20) < 0) {
+		LOGW("zone 1 sub button not found.");
+		goto error;
+	}
+	sleep(2);
+	mInputService->TapOnScreen(&enterZone2SubButtonPoint.coord, 3);
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(30);
 
+	LOGD("battle once 0");
 	ret = battle_once(0);
 	if (ret < 0) goto error;
 	sleep(18);
 
+	LOGD("battle once 4");
 	ret = battle_once(4);
 	if (ret < 0) goto error;
-	sleep(18);
-	
+
+	LOGD("battel till finish entering");
 	ret = battle_till_finish(&bondButtonPoint);
 	if (ret < 0) goto error;
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(25);
 
 	// wait for magic stone
-	if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 10) < 0) {
-		LOGW("magic stone button not found.\n");
+	LOGD("waititng for magic stone");
+	if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 30) < 0) {
+		LOGW("magic stone button not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&magicStoneButtonPoint.coord);
+	mInputService->TapOnScreen(&magicStoneButtonPoint.coord, 20);
 	return 0;
 
 error:
@@ -476,48 +514,52 @@ int first_ten_summon(void)
 	int max_round = 82000;
 
 	if (mCaptureService->WaitOnColor(&menuButtonPoint, 10) < 0) {
-		LOGW("menuButtonPoint not found.\n");
+		LOGW("menuButtonPoint not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&menuButtonPoint.coord);
+	mInputService->TapOnScreen(&menuButtonPoint.coord, 2);
 	sleep(3);
-	mInputService->TapOnScreen(&summonButtonPoint.coord);
-	sleep(5);
-	mInputService->TapOnScreen(&tenDrawButtonPoint.coord);
+	mInputService->TapOnScreen(&summonButtonPoint.coord, 3);
+	sleep(6);
+	mInputService->TapOnScreen(&tenDrawButtonPoint.coord, 4);
 	sleep(3);
-	mInputService->TapOnScreen(&confirmDrawButtonPoint.coord);
+	mInputService->TapOnScreen(&confirmDrawButtonPoint.coord, 3);
 	sleep(3);
-
+	LOGD("start waiting for servant introduce");
 	//wait for servant introduce themselve
-	while(!mCaptureService->ColorIs(&summonDoneSummonButtonPoint) && max_round > 0) {
-		mInputService->TapOnScreen(&summonDoneButtonPoint.coord);
-		usleep(100 * 1000);
+	while(!mCaptureService->ColorIs(&summonDoneSummonButtonPoint) && (max_round > 0)) {
+		mInputService->TapOnScreen(&summonDoneButtonPoint.coord, 10, 4);
+		sleep(1);
 		max_round--;
 	}
-	mInputService->TapOnScreen(&summonDoneSummonButtonPoint.coord);
+	LOGD("end waiting");
+	sleep(1);
+	mInputService->TapOnScreen(&summonDoneSummonButtonPoint.coord, 2);
+	sleep(1);
+	mInputService->TapOnScreen(&summonDoneSummonButtonPoint.coord, 2);
 	sleep(3);
 
-	mInputService->TapOnScreen(&menuButtonPoint.coord);
+	mInputService->TapOnScreen(&menuButtonPoint.coord, 2);
 	sleep(3);
-	mInputService->TapOnScreen(&teamButtonPoint.coord);
+	mInputService->TapOnScreen(&teamButtonPoint.coord, 4, 2);
 	sleep(3);
-	mInputService->TapOnScreen(&partyButtonPoint.coord);
+	mInputService->TapOnScreen(&partyButtonPoint.coord, 4, 2);
 	sleep(3);
-	mInputService->TapOnScreen(&member2ButtonPoint.coord);
+	mInputService->TapOnScreen(&member2ButtonPoint.coord, 2);
 	sleep(3);
 	if (mCaptureService->WaitOnColor(&memberTutorTextPoint, 10) < 0) {
-		LOGW("memberTutorTextPoint not found.\n");
+		LOGW("memberTutorTextPoint not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&selectServantButtonPoint.coord);
+	mInputService->TapOnScreen(&selectServantButtonPoint.coord, 30);
 	sleep(2);
-	mInputService->TapOnScreen(&selectServantButtonPoint.coord);
+	mInputService->TapOnScreen(&selectServantButtonPoint.coord, 3, 5);
 	sleep(5);
-	mInputService->TapOnScreen(&partyConfigDoneButtonPoint.coord);
+	mInputService->TapOnScreen(&partyConfigDoneButtonPoint.coord, 2);
 	sleep(10);
-	mInputService->TapOnScreen(&partyCloseButtonPoint.coord);
+	mInputService->TapOnScreen(&partyCloseButtonPoint.coord, 2);
 	sleep(3);
-	mInputService->TapOnScreen(&teamCloseButtonPoint.coord);
+	mInputService->TapOnScreen(&teamCloseButtonPoint.coord, 2);
 	sleep(3);
 	return 0;
 error:
@@ -531,28 +573,37 @@ int XC1_battle(void)
 {
 	int ret = 0;
 
-	if (mCaptureService->WaitOnColor(&enterZone3ButtonPoint, 40) < 0) {
-		LOGW("zone 3 button not found.\n");
+	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
+		LOGW("not in zone selection.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&enterZone3ButtonPoint.coord);
+	LOGD("Enter zone selection");
 	sleep(2);
+	mInputService->TapOnScreen(&enterZone3ButtonPoint.coord);
 
-	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord);
+	if (mCaptureService->WaitOnColor(&enterZone3SubButtonPoint, 10) < 0) {
+		LOGW("zone 3 sub not found.");
+		goto error;
+	}
+	LOGD("Enter zone 3 sub found");
+	sleep(2);
+	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord, 2);
 	sleep(3);
 	
 	if (mCaptureService->WaitOnColor(&selectSupportTextPoint, 40) < 0) {
-		LOGW("selectSupportTextPoint not found.\n");
+		LOGW("selectSupportTextPoint not found.");
 		goto error;
 	}
-	mInputService->TapOnScreen(&selectSupportTextPoint.coord);
+	LOGD("found select support.");
+	mInputService->TapOnScreen(&selectSupportTextPoint.coord, 6);
 	sleep(2);
-	
-	mInputService->TapOnScreen(&selectSupportButtonPoint.coord);
+
+	mInputService->TapOnScreen(&selectSupportButtonPoint.coord, 2);
 	sleep(3);
-	
-	mInputService->TapOnScreen(&questStartButtonPoint.coord);
+
+	mInputService->TapOnScreen(&questStartButtonPoint.coord, 2);
 	sleep(3);
+	LOGD("quest start pressed.");
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
@@ -562,14 +613,16 @@ int XC1_battle(void)
 	if (ret < 0) goto error;
 	sleep(3);
 
-	mInputService->TapOnScreen(&applyFriendButtonPoint.coord);
+	LOGD("apply friend");
+	mInputService->TapOnScreen(&applyFriendButtonPoint.coord, 3, 2);
 	sleep(5);
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
 	sleep(13);
-	
-	mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord);
+
+	//need change, sometime it will not change
+	mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord, 2);
 	sleep(3);
 
 	return 0;
@@ -585,49 +638,50 @@ int XC2_battle(int speed_up)
 {
 	int ret = 0;
 
-	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord);
+	if (mCaptureService->WaitOnColor(&enterZone3SubButtonPoint, 30) < 0) {
+		LOGW("zone 3 sub not found.");
+		goto error;
+	}
+	sleep(2);
+	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord, 2);
 	sleep(4);
-	
-	mInputService->TapOnScreen(&selectSupportButtonPoint.coord);
+
+	mInputService->TapOnScreen(&selectSupportButtonPoint.coord, 3);
 	sleep(4);
-	
-	mInputService->TapOnScreen(&questStartButtonPoint.coord);
+
+	mInputService->TapOnScreen(&questStartButtonPoint.coord, 2);
 	sleep(4);
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(35);
 
 	// need to speed up again
 	if (speed_up == 1) {
 		ret = battle_once(3);
 		if (ret < 0) goto error;
-		sleep(18);
 	}
 
 	ret = battle_till_finish(&bondButtonPoint);
 	if (ret < 0) goto error;
 	sleep(3);
 
-	mInputService->TapOnScreen(&applyFriendButtonPoint.coord);
+	mInputService->TapOnScreen(&applyFriendButtonPoint.coord, 3);
 	sleep(5);
 
 	// second round has magic stone and info
 	if (speed_up == 0) {
 		ret = check_for_skip();
-		sleep(13);
 
 		// wait for magic stone
-		if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 10) < 0) {
-			LOGW("magic stone button not found.\n");
+		if (mCaptureService->WaitOnColor(&magicStoneButtonPoint, 30) < 0) {
+			LOGW("magic stone button not found.");
 			goto error;
 		}
-		mInputService->TapOnScreen(&magicStoneButtonPoint.coord);
+		mInputService->TapOnScreen(&magicStoneButtonPoint.coord, 30);
 		sleep(8);
 
 		// tap info
-		mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord);
-		sleep(3);
+		mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord, 3);
 	}
 
 	return 0;
@@ -644,12 +698,12 @@ int take_out_all_box(void)
 	int ret = 0;
 
 	if (mCaptureService->WaitOnColor(&giftBoxButtonPoint, 40) < 0) {
-		LOGW("gift box button not found.\n");
+		LOGW("gift box button not found.");
 		goto error;
 	}
 	mInputService->TapOnScreen(&takeOutAllButtonPoint.coord);
 	sleep(2);
-	
+
 	mInputService->TapOnScreen(&CloseBoxButtonPoint.coord);
 	sleep(2);
 	return 0;
@@ -667,42 +721,52 @@ void* keep_main(void* data)
 {
 	int ret;
 
+	//clean log
+	std::system("rm /data/joshtool/log*");
+
 	ret = intro_presetup();
 	if (ret < 0) goto done;
 
 	//wait for all white screen dismissed
-	sleep(15);
-
+	sleep(8);
+	LOGD("intro_battle >>>> ");
 	ret = intro_battle();
 	if (ret < 0) goto done;
+	sleep(5);
 
+	LOGD("create character >>>>");
 	ret = create_character();
 	if (ret < 0) goto done;
-	sleep(12);
-	
+	sleep(10);
+
+	LOGD("XA battle >>>> ");
 	ret = XA_battle();
 	if (ret < 0) goto done;
-	sleep(10);
-	
+	sleep(5);
+
+	LOGD("XB battle >>>> ");
 	ret = XB_battle();
 	if (ret < 0) goto done;
-	sleep(10);
-	
+	sleep(5);
+
+	LOGD("1st 10 summon >>>> ");
 	ret = first_ten_summon();
 	if (ret < 0) goto done;
 	sleep(10);
-	
+
+	LOGD("XC-1 >>> ");
 	ret = XC1_battle();
 	if (ret < 0) goto done;
-	sleep(5);
-	
+	sleep(15);
+
+	LOGD("XC-2 >>> ");
 	ret = XC2_battle(1);
 	if (ret < 0) goto done;
 	sleep(15);
-	
+
+	LOGD("XC-3 >>> ");
 	ret = XC2_battle(0);
 	if (ret < 0) goto done;
-	sleep(10);
 
 done:
 	mSettingService->PlaySound(1);
@@ -724,7 +788,6 @@ void* keep_xb(void* data)
 	int ret;
 	ret = XC1_battle();
 	if (ret < 0) goto done;
-	
 
 done:
 	mSettingService->PlaySound(1);

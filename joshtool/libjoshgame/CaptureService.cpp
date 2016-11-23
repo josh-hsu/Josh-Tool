@@ -32,7 +32,7 @@
 
 CaptureService::CaptureService()
 {
-	LOGD("CaptureService has been created.\n");
+	LOGD("CaptureService has been created.");
 }
 
 
@@ -84,16 +84,36 @@ void CaptureService::GetColorOnScreen(ScreenColor* sc, ScreenCoord* coord)
 int CaptureService::WaitOnColor(ScreenColor* sc, ScreenCoord* coord, int thres)
 {
 	ScreenColor currentColor;
-	LOGD("CaptureService: now busy waiting for (%d,%d) turn into %x,%x,%x\n",
+	LOGD("CaptureService: now busy waiting for (%d,%d) turn into %x,%x,%x",
 		coord->x, coord->y, sc->r, sc->g, sc->b);
 
 	while(thres-- > 0) {
 		GetColorOnScreen(&currentColor, coord);
 		if (ColorCompare(sc, &currentColor)) {
-			LOGD("CaptureService: Matched! \n");
+			LOGD("CaptureService: Matched! ");
 			return 0;
 		} else {
-			usleep(100*1000);
+			sleep(1);
+		}
+	}
+
+	return -1;
+}
+
+int CaptureService::WaitOnColorKindOf(ScreenColor* sc,
+				ScreenCoord* coord, int check_time, int thres)
+{
+	ScreenColor currentColor;
+	LOGD("CaptureService: now busy waiting for (%d,%d) turn into %x,%x,%x",
+		coord->x, coord->y, sc->r, sc->g, sc->b);
+
+	while(check_time-- > 0) {
+		GetColorOnScreen(&currentColor, coord);
+		if (ColorCompare(sc, &currentColor, thres)) {
+			LOGD("CaptureService: Matched! ");
+			return 0;
+		} else {
+			sleep(1);
 		}
 	}
 
@@ -105,11 +125,23 @@ int CaptureService::WaitOnColor(ScreenPoint* sp, int thres)
 	return WaitOnColor(&sp->color, &sp->coord, thres);
 }
 
+int CaptureService::WaitOnColorKindOf(ScreenPoint* sp, int check_time, int thres)
+{
+	return WaitOnColorKindOf(&sp->color, &sp->coord, check_time, thres);
+}
+
 bool CaptureService::ColorIs(ScreenPoint* point)
 {
 	ScreenColor currentColor;
 	GetColorOnScreen(&currentColor, &point->coord);
 	return ColorCompare(&currentColor, &point->color);
+}
+
+bool CaptureService::ColorKindOf(ScreenPoint* point, int thres)
+{
+	ScreenColor currentColor;
+	GetColorOnScreen(&currentColor, &point->coord);
+	return ColorCompare(&currentColor, &point->color, thres);
 }
 
 int CaptureService::WaitOnColorAsync(ScreenColor* sc, ScreenCoord* coord, int thres)
@@ -120,16 +152,16 @@ int CaptureService::WaitOnColorAsync(ScreenColor* sc, ScreenCoord* coord, int th
 int CaptureService::WaitOnColorNotEqual(ScreenColor* sc, ScreenCoord* coord, int thres)
 {
 	ScreenColor currentColor;
-	LOGD("CaptureService: now busy waiting for (%d,%d) is not %x,%x,%x\n",
+	LOGD("CaptureService: now busy waiting for (%d,%d) is not %x,%x,%x",
 		coord->x, coord->y, sc->r, sc->g, sc->b);
 
 	while(thres-- > 0) {
 		GetColorOnScreen(&currentColor, coord);
 		if (!ColorCompare(sc, &currentColor)) {
-			LOGD("CaptureService: Matched! \n");
+			LOGD("CaptureService: Matched! ");
 			return 0;
 		} else {
-			usleep(100);
+			sleep(1);
 		}
 	}
 
@@ -138,9 +170,18 @@ int CaptureService::WaitOnColorNotEqual(ScreenColor* sc, ScreenCoord* coord, int
 
 bool CaptureService::ColorCompare(ScreenColor *src, ScreenColor *dest)
 {
-	if((src->r == dest->r) &&
-	   (src->g == dest->g) &&
-	   (src->b == dest->b)) {
+	return ColorCompare(src, dest, 0x00);
+}
+
+bool CaptureService::ColorCompare(ScreenColor *src, ScreenColor *dest, int thres)
+{
+	int r_diff = abs(src->r - dest->r);
+	int g_diff = abs(src->g - dest->g);
+	int b_diff = abs(src->b - dest->b);
+
+	if((r_diff <= thres) &&
+	   (g_diff <= thres) &&
+	   (b_diff <= thres)) {
 		return true;
 	}
 

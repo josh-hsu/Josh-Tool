@@ -59,7 +59,7 @@ InputService::InputService() :
 	mTestInterval(10),
 	mTestSelection(1) {
 
-	LOGD("InputService instance is created. \n");
+	LOGD("InputService instance is created. ");
 	mCaptureService = new CaptureService();
 }
 
@@ -75,16 +75,16 @@ void InputService::Init() {
 		mInputDevices[i] = new InputDevice(device_name[i], &mDeviceCallbacks, this);
 		ret = mInputDevices[i]->StartPolling();
 		if (ret < 0) {
-			LOGW("%s: this device cannot be polled.\n", device_name[i]);
+			LOGW("%s: this device cannot be polled.", device_name[i]);
 		}
 	}
 
-	LOGD("InputService is initialized.\n");
+	LOGD("InputService is initialized.");
 }
 
 void InputService::SetCallback(input_callbacks* ic) {
 	if (ic == NULL) {
-		LOGE("Your callback function is null.\n");
+		LOGE("Your callback function is null.");
 		return;
 	}
 	mCallbacks = ic;
@@ -121,7 +121,7 @@ int InputService::TouchOnScreen(int x, int y, int tx, int ty, InputType type) {
 		std::system(tap_command);
 		break;	
 	default:
-		LOGW("TouchOnScreen: type %d is invalid.\n", type);
+		LOGW("TouchOnScreen: type %d is invalid.", type);
 	}
 	return 0;
 }
@@ -140,13 +140,40 @@ int InputService::TapOnScreen(ScreenCoord* coord1)
 	return 0;
 }
 
+int InputService::TapOnScreen(ScreenCoord* coord1, int drift)
+{
+	return TapOnScreen(coord1, drift, drift);
+}
+
+int InputService::TapOnScreen(ScreenCoord* coord1, int drift_x, int drift_y)
+{
+	char tap_command[100];
+	int x_diff, y_diff;
+
+	//reset random seed
+	srand((unsigned)time(NULL));
+	x_diff = rand() % (2 * drift_x);
+	y_diff = rand() % (2 * drift_y);
+	x_diff -= drift_x;
+	y_diff -= drift_y;
+
+	if (mGameOrientation != coord1->orien)
+		snprintf(tap_command, 100, "input tap %d %d", coord1->y + y_diff, mScreenWidth - coord1->x + x_diff);
+	else
+		snprintf(tap_command, 100, "input tap %d %d", coord1->x + x_diff, coord1->y + y_diff);
+
+	std::system(tap_command);
+	usleep(10);
+	return 0;
+}
+
 /*
  * Tap on screen amount of times until the color on the screen is not in point->color
  */
 int InputService::TapOnScreenUntilColorChanged(ScreenPoint* point, int interval, int retry)
 {
 	if (point == NULL) {
-		LOGW("InputService: null point.\n");
+		LOGW("InputService: null point.");
 		goto not_found;
 	}
 
@@ -154,9 +181,9 @@ int InputService::TapOnScreenUntilColorChanged(ScreenPoint* point, int interval,
 		TapOnScreen(&point->coord);
 		usleep(interval * 10);
 		if (mCaptureService->ColorIs(point)) {
-			LOGD("InputService: color didn't change, try again? [%s]\n", retry > 0 ? "YES" : "NO");
+			LOGD("InputService: color didn't change, try again? [%s]", retry > 0 ? "YES" : "NO");
 		} else {
-			LOGD("InputService: color changed. exiting..\n");
+			LOGD("InputService: color changed. exiting..");
 			return 0;
 		}
 	}
@@ -169,7 +196,7 @@ int InputService::TapOnScreenUntilColorChangedTo(ScreenPoint* point,
 		ScreenPoint* to, int interval, int retry)
 {
 	if ((point == NULL) || (to == NULL)) {
-		LOGW("InputService: null points.\n");
+		LOGW("InputService: null points.");
 		goto not_found;
 	}
 
@@ -177,9 +204,9 @@ int InputService::TapOnScreenUntilColorChangedTo(ScreenPoint* point,
 		TapOnScreen(&point->coord);
 		usleep(interval * 10);
 		if (mCaptureService->ColorIs(to)) {
-			LOGD("InputService: color changed to specific point. exiting..\n");
+			LOGD("InputService: color changed to specific point. exiting..");
 		} else {
-			LOGD("InputService: color didn't change to specific point, try again? [%s]\n",
+			LOGD("InputService: color didn't change to specific point, try again? [%s]",
 				retry > 0 ? "YES" : "NO");
 			return 0;
 		}
@@ -197,12 +224,12 @@ int InputService::TouchOnScreenAsync(int x, int y, int tx, int ty, InputType typ
 
 // button key functions
 int InputService::PressButtonKey(KeyType type) {
-	LOGD("PressButtonKey for type %d currently not implemented.\n", type);
+	LOGD("PressButtonKey for type %d currently not implemented.", type);
 	return 0;
 }
 
 int InputService::PressButtonKeyAsync(KeyType type) {
-	LOGD("PressButtonKeyAsync for type %d currently not implemented.\n", type);
+	LOGD("PressButtonKeyAsync for type %d currently not implemented.", type);
 	return 0;
 }
 
@@ -268,7 +295,7 @@ static void dc_event_handler(device_callbacks* dc, void* self, void* caller,
 	time_t current_time;
 
 	if (event_type != EV_SYN) {
-		LOGD("device %s trigger event %d code %d data %d\n", inputDevice->mDeviceName, event_type, event_code, event_data);
+		LOGD("device %s trigger event %d code %d data %d", inputDevice->mDeviceName, event_type, event_code, event_data);
 		/* button pressed, save jiffies */
 		if (event_code == KEY_POWER && event_data == 1)
 			time(&key_jiffies[0]);
@@ -279,13 +306,17 @@ static void dc_event_handler(device_callbacks* dc, void* self, void* caller,
 
 		if (event_code == KEY_VOLUMEDOWN && event_data == 0) {
 			time(&current_time);
-			if (difftime(current_time, key_jiffies[2]) >= 2)
+			if (difftime(current_time, key_jiffies[2]) >= 5)
+				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_LONG_LONG_PRESSED);
+			else if (difftime(current_time, key_jiffies[2]) >= 2)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_LONG_PRESSED);
 			else
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_PRESSED);
 		} else if (event_code == KEY_VOLUMEUP && event_data == 0) {
 			time(&current_time);
-			if (difftime(current_time, key_jiffies[1]) >= 2)
+			if (difftime(current_time, key_jiffies[1]) >= 5)
+				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_UP_LONG_LONG_PRESSED);
+			else if (difftime(current_time, key_jiffies[1]) >= 2)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_UP_LONG_PRESSED);
 			else
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_UP_PRESSED);

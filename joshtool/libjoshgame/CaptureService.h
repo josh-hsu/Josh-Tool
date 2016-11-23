@@ -57,6 +57,8 @@ class CaptureService {
 	/* block waiting until the color on the screen (x,y) turn into */
 	int WaitOnColor(ScreenColor* sc, ScreenCoord* coord, int thres);
 	int WaitOnColor(ScreenPoint* sp, int thres);
+	int WaitOnColorKindOf(ScreenPoint* sp, int check_time, int thres);
+	int WaitOnColorKindOf(ScreenColor* sc, ScreenCoord* coord, int check_time, int thres);
 
 	/* async waiting until the color on the screen (x,y) turn into */
 	int WaitOnColorAsync(ScreenColor* sc, ScreenCoord* coord, int thres);
@@ -66,9 +68,12 @@ class CaptureService {
 
 	/* directly return if color on that point is correct */
 	bool ColorIs(ScreenPoint* point);
+	bool ColorKindOf(ScreenPoint* point, int thres);
 
 	/* compare two colors, return true if two colors are the same */
 	bool ColorCompare(ScreenColor *src, ScreenColor *dest);
+	bool ColorCompare(ScreenColor *src, ScreenColor *dest, int thres);
+
 
   //private:
 	void DumpScreen(const char* filename);

@@ -59,22 +59,22 @@ static input_callbacks mInputCallbacks = {
 void ic_error_handler(input_callbacks* ic, ErrorType err)
 {
 	if (ic != &mInputCallbacks) {
-		LOGE("Callback mismatched! abort here.\n");
+		LOGE("Callback mismatched! abort here.");
 		return;
 	}
 	
-	LOGW("InputService returns an error, type = %d\n", err);
+	LOGW("InputService returns an error, type = %d", err);
 }
 
 void ic_jobdone_handler(input_callbacks* ic, int jobid)
 {
 	if (ic != &mInputCallbacks) {
-		LOGE("Callback mismatched! abort here.\n");
+		LOGE("Callback mismatched! abort here.");
 		return;
 	}
 	
 	if (jobid > 0) {
-		LOGD("Job ID %d is finished.\n", jobid);
+		LOGD("Job ID %d is finished.", jobid);
 	}
 }
 
@@ -84,23 +84,21 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 	static bool enable_screen = true;
 
 	if (ic != &mInputCallbacks) {
-		LOGE("Callback mismatched! abort here.\n");
+		LOGE("Callback mismatched! abort here.");
 		return;
 	}
 
 	switch(event) {
 	case EVENT_REGISTERED:
-		LOGD("input service has registered.\n");
+		LOGD("input service has registered.");
 		break;
 	case EVENT_UNREGISTERED:
-		LOGD("EVENT_UNREGISTERED\n");
+		LOGD("EVENT_UNREGISTERED");
 		break;
 	case EVENT_VOLUMN_UP_PRESSED:
-		LOGD("volumn up hit.\n");
-		LOGI("音量上鍵觸發");
+		LOGD("volumn up hit.");
 		if (capture_mode_enable) {
-			LOGD("capture mode enabled, do dump screen\n");
-			LOGI("擷取模式 長按下鍵取消");
+			LOGD("capture mode enabled, do dump screen");
 			dump_screen();
 			break;
 		} else if (!event_handle_in_progress) {
@@ -114,11 +112,9 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 
 		break;
 	case EVENT_VOLUMN_DOWN_PRESSED:
-		LOGD("volumn down hit.\n");
-		LOGI("音量下鍵觸發開關螢幕");
+		LOGD("volumn down hit.");
 		if (capture_mode_enable) {
-			LOGD("capture mode enabled, do dump screen.\n");
-			LOGI("擷取模式 長按下鍵取消");
+			LOGD("capture mode enabled, do dump screen.");
 			dump_screen();
 		} else if (!event_handle_in_progress) {
 			event_handle_in_progress = true;
@@ -131,22 +127,26 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 
 		break;
 	case EVENT_VOLUMN_UP_LONG_PRESSED:
-		LOGD("volumn up long pressed, changing hero triggerred.\n");
-		LOGI("長按音量下 開關擷取模式");
-		capture_mode_enable = !capture_mode_enable;
+		LOGD("volumn up long pressed, changing hero triggerred.");
+		//capture_mode_enable = !capture_mode_enable;
 		break;
 	case EVENT_VOLUMN_DOWN_LONG_PRESSED:
-		LOGD("volumn down long pressed, trigger dump screen.\n");
-		LOGI("長按音量上 開關擷取模式");
-		capture_mode_enable = !capture_mode_enable;
+		LOGD("volumn down long pressed, trigger dump screen.");
+		//capture_mode_enable = !capture_mode_enable;
+		break;
+	case EVENT_VOLUMN_DOWN_LONG_LONG_PRESSED:
+		LOGD("volumn down long long pressed, clean data.");
+		std::system("mkdir -p /sdcard/fgo/accounts");
+		std::system("mv -f /data/data/com.aniplex.fategrandorder/files/*.dat /sdcard/fgo/accounts/");
+		std::system("mv -f /data/data/com.aniplex.fategrandorder/shared_prefs/* /sdcard/fgo/accounts/");
 		break;
 	case EVENT_POWER_KEY_PRESSED:
-		LOGD("power key hit.\n");
+		LOGD("power key hit.");
 		mFGO->StopJob(0);
 		mInputService->ConfigTouchScreen(true);
 		break;
 	default:
-		LOGW("Unknown event %d\n", event);
+		LOGW("Unknown event %d", event);
 		break;
 	}
 }

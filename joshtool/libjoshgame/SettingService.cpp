@@ -11,7 +11,7 @@
 
 SettingService::SettingService()
 {
-	LOGD("SettingService is preparing settings.\n");
+	LOGD("SettingService is preparing settings.");
 }
 
 void SettingService::PrepareSettings(void)
@@ -111,7 +111,7 @@ bool SettingService::GetBool(Settings setting, bool default_value)
 	settingFile = fopen(filepath, "r+");
 
 	if (settingFile == NULL) {
-		LOGW("cannot open settingFile %s, using default.\n", filepath);
+		LOGW("cannot open settingFile %s, using default.", filepath);
 		return default_value;
 	}
 
@@ -135,7 +135,7 @@ int SettingService::GetInt(Settings setting, int default_value)
 	settingFile = fopen(filepath, "r+");
 
 	if (settingFile == NULL) {
-		LOGW("cannot open settingFile %s\n", filepath);
+		LOGW("cannot open settingFile %s", filepath);
 		return default_value;
 	}
 
@@ -151,9 +151,5 @@ int SettingService::GetInt(Settings setting, int default_value)
 
 void SettingService::PlaySound(int i)
 {
-	if (i == 1) {
-		std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/mp3\" -d \"file:///storage/sdcard0/Recorders/Mumu.mp3\"");
-	} else {
-		std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/ogg\" -d \"file:///storage/sdcard0/Ringtones/hangouts_incoming_call.ogg\"");
-	}
+	std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/ogg\" -d \"file:///storage/sdcard0/Ringtones/hangouts_incoming_call.ogg\"");
 }

@@ -48,10 +48,10 @@ InputDevice::InputDevice(char* device_name, device_callbacks* dc, void* is) :
 	mDeviceCallbacks = dc;
 	mInputService = is;
 
-	LOGD("%s has been injected, now doing initialization.\n", device_name);
+	LOGD("%s has been injected, now doing initialization.", device_name);
 	ret = Init();
 	if (ret < 0) {
-		LOGE("%s cannot be opened.\n", mDeviceName);
+		LOGE("%s cannot be opened.", mDeviceName);
 	}
 }
 
@@ -59,7 +59,7 @@ int InputDevice::Init()
 {
 	mDeviceFd = OpenInputDevice(mDeviceName);
 	if (mDeviceFd < 0) {
-		LOGE("Cannot open this device\n");
+		LOGE("Cannot open this device");
 		return -1;
 	}
 
@@ -71,10 +71,10 @@ int InputDevice::Init()
 int InputDevice::StartPolling(void)
 {
 	if (!mDeviceInitialized) {
-		LOGE("this device %s has never initialized.\n", mDeviceName);
+		LOGE("this device %s has never initialized.", mDeviceName);
 		return -1;
 	} else if (mStartPolling) {
-		LOGE("device %s is already polling.\n", mDeviceName);
+		LOGE("device %s is already polling.", mDeviceName);
 		return -2;
 	}
 
@@ -137,7 +137,7 @@ void InputDevice::PollLoop(void) {
         } else if (poll_fds[1].revents & POLLIN) {
 		    ret = read(mDeviceFd, &event, sizeof(event));
         } else {
-            LOGE("%s: wrong event.\n", mDeviceName);
+            LOGE("%s: wrong event.", mDeviceName);
             continue;
         }
 
@@ -209,7 +209,7 @@ int InputDevice::OpenInputDevice(const char *sensor_device_name)
 		}
 
 		if (!strcmp(name, sensor_device_name)) {
-			LOGD("devname is %s \n", devname);
+			LOGD("devname is %s ", devname);
 		} else {
 			close(fd);
 			continue;

@@ -19,7 +19,7 @@
 
 void thread_exit_handler(int sig)
 { 
-    LOGD("Exiting..., this signal is %d \n", sig);
+    LOGD("Exiting..., this signal is %d ", sig);
     pthread_exit(0);
 }
 
@@ -45,7 +45,7 @@ void* CoreThread::MainThreadRoutine(void* data)
 
 	tdata = reinterpret_cast<CoreThread*>(data);
 	if (!tdata) {
-		LOGE("Thread start failed, tdata is null.\n");
+		LOGE("Thread start failed, tdata is null.");
 		goto out;
 	}
 
@@ -65,7 +65,7 @@ jobdone:
 	if (tdata->mJobDoneCallback) {
 		tdata->mJobDoneCallback();
 	} else {
-		LOGW("Job is done but callback is null.\n");
+		LOGW("Job is done but callback is null.");
 	}
 
 out:
@@ -101,7 +101,7 @@ int CoreThread::Stop()
 	if (pthread_kill(mThreadId, 0) != ESRCH) {
 		ret = pthread_kill(mThreadId, SIGUSR1);
 	} else {
-		LOGW("Kill thread is not necessary => NOT RUNNING\n");
+		LOGW("Kill thread is not necessary => NOT RUNNING");
 	}
 
 	mCurrentStatus = CTS_TERMINATED;

@@ -1,5 +1,5 @@
 /*
- * sevenknight_zb551kl_script.h
+ * fgo_zb551kl_script.h
  * 
  * This header is suitable for all 720x1280 display Android devices.
  */
