@@ -139,6 +139,7 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		std::system("mkdir -p /sdcard/fgo/accounts");
 		std::system("mv -f /data/data/com.aniplex.fategrandorder/files/*.dat /sdcard/fgo/accounts/");
 		std::system("mv -f /data/data/com.aniplex.fategrandorder/shared_prefs/* /sdcard/fgo/accounts/");
+		std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/ogg\" -d \"file:///storage/sdcard0/Ringtones/hangouts_incoming_call.ogg\"");
 		break;
 	case EVENT_POWER_KEY_PRESSED:
 		LOGD("power key hit.");

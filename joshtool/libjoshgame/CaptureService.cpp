@@ -173,6 +173,11 @@ bool CaptureService::ColorCompare(ScreenColor *src, ScreenColor *dest)
 	return ColorCompare(src, dest, 0x00);
 }
 
+/*
+ * ColorCompare
+ * Compare two colors with error specify
+ * TODO: no overflow checking
+ */
 bool CaptureService::ColorCompare(ScreenColor *src, ScreenColor *dest, int thres)
 {
 	int r_diff = abs(src->r - dest->r);

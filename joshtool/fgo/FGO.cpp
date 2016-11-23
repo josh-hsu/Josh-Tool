@@ -401,6 +401,7 @@ int XA_battle(void)
 		LOGW("not in zone selection.");
 		goto error;
 	}
+	sleep(4);
 	mInputService->TapOnScreen(&enterZone1ButtonPoint.coord);
 	sleep(2);
 
