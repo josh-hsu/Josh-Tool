@@ -163,3 +163,25 @@ void SettingService::StartFGO()
 {
 	std::system("am start \"com.aniplex.fategrandorder/jp.delightworks.Fgo.player.AndroidPlugin\"");
 }
+
+void SettingService::SaveGameData(const char* root)
+{
+	char files_path[150];
+	char prefs_path[150];
+	snprintf(files_path, 150, "mkdir -p %s/files", root);
+	snprintf(prefs_path, 150, "mkdir -p %s/shared_prefs", root);
+	std::system(files_path);
+	std::system(prefs_path);
+	LOGD("create folder %s and %s", files_path, prefs_path);
+
+	snprintf(files_path, 150, "mv -f /data/data/com.aniplex.fategrandorder/files/*.dat %s/files/", root);
+	snprintf(prefs_path, 150, "mv -f /data/data/com.aniplex.fategrandorder/shared_prefs/*.xml %s/shared_prefs/", root);
+	std::system(files_path);
+	std::system(prefs_path);
+
+	//make sure file system is synced
+	LOGD("sync file system");
+	std::system("sync");
+}
+
+

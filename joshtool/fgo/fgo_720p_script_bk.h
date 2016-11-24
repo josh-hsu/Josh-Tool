@@ -18,12 +18,15 @@ struct ScreenColor noColor = {0x00, 0x00, 0x00, NO_COLOR_T};
  */
 struct ScreenPoint homePageButtonPoint = {{108, 876, SO_Portrait}, {0x01, 0x3F, 0xA4, 0x00}};
 struct ScreenPoint agreementButtonPoint = {{171, 769, SO_Portrait}, {0x10, 0x10, 0x10, 0x00}};
+struct ScreenPoint loadingTextPoint = {{523, 591, SO_Portrait}, {0xD2, 0xB3, 0x89, 0x00}};
 
 /*
  * intro
  */
 struct ScreenPoint skipButtonPoint = {{682, 1176, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+struct ScreenPoint skipTextPoint = {{157, 1227, SO_Portrait}, {0x98, 0xA3, 0xB1, 0x00}};
 struct ScreenPoint confirmSkipButtonPoint = {{165, 796, SO_Portrait}, {0x00, 0x00, 0x00, 0x00}};
+//struct ScreenPoint confirmSkipButtonPoint = {{157, 803, SO_Portrait}, {0xAD, 0xAD, 0xAE, 0x00}};
 
 /*
  * Teaching battle
@@ -57,6 +60,8 @@ struct ScreenPoint royalCardButtonPoint = {{507, 416, SO_Portrait}, noColor};
 struct ScreenPoint touchNameButtonPoint = {{368, 911, SO_Portrait}, {0x30, 0x30, 0x30, 0x00}};
 //send input word and return, in case return dosent work
 struct ScreenPoint returnButtonPoint = {{564, 1143, SO_Portrait}, noColor};
+//enter name
+struct ScreenPoint enterNameButtonPoint = {{244, 882, SO_Portrait}, noColor};
 //confirm name 
 struct ScreenPoint confirmNameButtonPoint = {{158, 828, SO_Portrait}, {0x00, 0x00, 0x00, 0x00}};
 
@@ -69,8 +74,10 @@ struct ScreenPoint confirmNameButtonPoint = {{158, 828, SO_Portrait}, {0x00, 0x0
 /*
  * Zone F, not confirmed coordination X-A
  */
-struct ScreenPoint enterZone1ButtonPoint = {{351, 666, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
-struct ScreenPoint enterZone1SubButtonPoint = {{501, 853, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+struct ScreenPoint inZoneSelectionPoint = {{28, 163, SO_Portrait}, {0x26, 0x24, 0x22, 0x00}};
+struct ScreenPoint enterZone1ButtonPoint = {{351, 666, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}}; //dont use this color
+//struct ScreenPoint enterZone1SubButtonPoint = {{501, 853, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+struct ScreenPoint enterZone1SubButtonPoint = {{492, 1157, SO_Portrait}, {0x95, 0x45, 0xE2, 0x00}};
 //wait for skip
 //wait for confirm
 //wait for draw
@@ -104,8 +111,9 @@ struct ScreenPoint magicStoneButtonPoint = {{197, 712, SO_Portrait}, {0xFF, 0xCD
 /*
  * Zone F, not confirmed coordination X-B
  */
-struct ScreenPoint enterZone2ButtonPoint = {{359, 667, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
-struct ScreenPoint enterZone2SubButtonPoint = {{506, 848, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+struct ScreenPoint enterZone2ButtonPoint = {{359, 667, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}}; //do use this color
+//struct ScreenPoint enterZone2SubButtonPoint = {{515, 854, SO_Portrait}, {0xFD, 0xFD, 0xFD, 0x00}};
+struct ScreenPoint enterZone2SubButtonPoint = {{500, 1162, SO_Portrait}, {0x78, 0x3E, 0xDB, 0x00}};
 //wait for skip
 //wait for confirm
 //wait for draw
@@ -128,20 +136,22 @@ struct ScreenPoint tapMosterButtonPoint = {{401, 297, SO_Portrait}, noColor};
 struct ScreenPoint menuButtonPoint = {{31, 1145, SO_Portrait}, {0x00, 0x00, 0x01, 0x00}};
 struct ScreenPoint summonButtonPoint = {{75, 536, SO_Portrait}, {0x31, 0x42, 0xB5, 0x00}};
 struct ScreenPoint tenDrawButtonPoint = {{148, 612, SO_Portrait}, {0xF4, 0xF3, 0xDD, 0x00}};
-struct ScreenPoint confirmDrawButtonPoint = {{163, 824, SO_Portrait}, {0x00, 0x00, 0x00, 0x00}};
+//struct ScreenPoint confirmDrawButtonPoint = {{163, 824, SO_Portrait}, {0x00, 0x00, 0x00, 0x00}};
+struct ScreenPoint confirmDrawButtonPoint = {{164, 823, SO_Portrait}, {0x1A, 0x1A, 0x1A, 0x00}};
 
 //tap tap tap until next
 struct ScreenPoint summonDoneButtonPoint = {{46, 1127, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
 
 //tap summon to return menu
-struct ScreenPoint summonDoneSummonButtonPoint = {{59, 759, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+//struct ScreenPoint summonDoneSummonButtonPoint = {{59, 759, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
+struct ScreenPoint summonDoneSummonButtonPoint = {{28, 783, SO_Portrait}, {0x04, 0x3D, 0x90, 0x00}};
 //tap menuButtonPoint
 //tap team
 struct ScreenPoint teamButtonPoint = {{87, 182, SO_Portrait}, {0x30, 0x41, 0xB4, 0x00}};
 struct ScreenPoint partyButtonPoint = {{557, 918, SO_Portrait}, {0x45, 0x45, 0x45, 0x00}};
 struct ScreenPoint member2ButtonPoint = {{416, 318, SO_Portrait}, {0xE4, 0xE4, 0xE4, 0x00}};
 struct ScreenPoint memberTutorTextPoint = {{419, 581, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
-struct ScreenPoint selectServantButtonPoint = {{448, 364, SO_Portrait}, noColor};
+struct ScreenPoint selectServantButtonPoint = {{431, 363, SO_Portrait}, noColor};
 struct ScreenPoint partyConfigDoneButtonPoint = {{54, 1183, SO_Portrait}, {0x27, 0x2F, 0x66, 0x00}};
 struct ScreenPoint partyCloseButtonPoint = {{684, 102, SO_Portrait}, {0x29, 0x33, 0x68, 0x00}};
 struct ScreenPoint teamCloseButtonPoint = {{683, 95, SO_Portrait}, {0x1D, 0x25, 0x51, 0x00}};
@@ -150,7 +160,8 @@ struct ScreenPoint teamCloseButtonPoint = {{683, 95, SO_Portrait}, {0x1D, 0x25, 
  * Zone F, not confirmed coordination X-C
  */
 struct ScreenPoint enterZone3ButtonPoint = {{350, 674, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
-struct ScreenPoint enterZone3SubButtonPoint = {{513, 853, SO_Portrait}, {0xFD, 0xFD, 0xFD, 0x00}};
+//struct ScreenPoint enterZone3SubButtonPoint = {{513, 853, SO_Portrait}, {0xFD, 0xFD, 0xFD, 0x00}};
+struct ScreenPoint enterZone3SubButtonPoint = {{500, 1162, SO_Portrait}, {0x78, 0x3E, 0xDB, 0x00}};
 struct ScreenPoint selectSupportTextPoint = {{325, 715, SO_Portrait}, {0xFF, 0xFF, 0xFF, 0x00}};
 struct ScreenPoint selectSupportButtonPoint = {{460, 289, SO_Portrait}, noColor};
 struct ScreenPoint questStartButtonPoint = {{55, 1183, SO_Portrait}, {0x34, 0x3F, 0x71, 0x00}};
@@ -169,7 +180,15 @@ struct ScreenPoint applyFriendButtonPoint = {{104, 301, SO_Portrait}, {0xB4, 0xB
 //wait for skip
 //wait for confirm
 
-//dump 87
+//struct ScreenPoint welcomeCloseButtonPoint = {{167, 588, SO_Portrait}, {0x00, 0x00, 0x00, 0x00}};
+struct ScreenPoint welcomeCloseButtonPoint = {{149, 613, SO_Portrait}, {0xAB, 0xAB, 0xAB, 0x00}};
+
+/*
+ * Take out gift
+ */
+struct ScreenPoint giftBoxButtonPoint = {{47, 416, SO_Portrait}, {0xFC, 0xEC, 0xD3, 0x00}};
+struct ScreenPoint takeOutAllButtonPoint = {{505, 1010, SO_Portrait}, {0x06, 0xF5, 0xBB, 0x00}};
+struct ScreenPoint CloseBoxButtonPoint = {{679, 75, SO_Portrait}, {0x16, 0x1A, 0x20, 0x00}};
 
 
 /*

@@ -57,6 +57,7 @@ class SettingService {
 	//FGO specific function
 	void KillFGO(void);
 	void StartFGO(void);
+	void SaveGameData(const char* root);
 
   private:
 	void PrepareSettings(void);

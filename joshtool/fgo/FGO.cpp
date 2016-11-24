@@ -400,7 +400,7 @@ int XA_battle(void)
 		LOGW("not in zone selection.");
 		goto error;
 	}
-	sleep(4);
+	sleep(6);
 	mInputService->TapOnScreen(&enterZone1ButtonPoint.coord);
 	sleep(2);
 
@@ -463,7 +463,7 @@ int XB_battle(void)
 		LOGW("not in zone selection.");
 		goto error;
 	}
-	sleep(2);
+	sleep(6);
 	mInputService->TapOnScreen(&enterZone2ButtonPoint.coord);
 
 	if (mCaptureService->WaitOnColorKindOf(&enterZone2SubButtonPoint, 20, 0x10) < 0) {
@@ -646,7 +646,7 @@ int XC2_battle(int speed_up)
 		LOGW("zone 3 sub not found.");
 		goto error;
 	}
-	sleep(2);
+	sleep(6);
 	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord, 2);
 	sleep(4);
 
@@ -707,15 +707,95 @@ int take_out_all_box(void)
 		LOGW("gift box button not found.");
 		goto error;
 	}
+	sleep(5);
+	mInputService->TapOnScreen(&giftBoxButtonPoint.coord);
+	sleep(3);
+
 	mInputService->TapOnScreen(&takeOutAllButtonPoint.coord);
-	sleep(2);
+	sleep(3);
 
 	mInputService->TapOnScreen(&CloseBoxButtonPoint.coord);
-	sleep(2);
+	sleep(10);
 	return 0;
 error:
 	return -1;
 }
+
+/*
+ * do_grand_summon
+ */
+int do_grand_summon(void)
+{
+	int ret = 0;
+	int draw = 1;
+	char save_path[130];
+
+	if (mCaptureService->WaitOnColorKindOf(&menu2ButtonPoint, 40, 0x09) < 0) {
+		LOGW("menu button not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&menu2ButtonPoint.coord);
+	sleep(1);
+
+	if (mCaptureService->WaitOnColorKindOf(&menuSummonButtonPoint, 10, 0x09) < 0) {
+		LOGW("menuSummonButtonPoint not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&menuSummonButtonPoint.coord);
+	sleep(1);
+
+	if (mCaptureService->WaitOnColorKindOf(&cancelSummonTutorButtonPoint, 10, 0x09) < 0) {
+		LOGW("cancelSummonTutorButtonPoint not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&cancelSummonTutorButtonPoint.coord);
+	sleep(3);
+
+	mInputService->TapOnScreen(&goToStoryButtonPoint.coord);
+	sleep(3);
+
+summon:
+	LOGD("Draw grand %d", draw);
+	if (mCaptureService->WaitOnColorKindOf(&onTimeDrawButtonPoint, 10, 0x1B) < 0) {
+		LOGW("onTimeDrawButtonPoint not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&onTimeDrawButtonPoint.coord);
+	sleep(1);
+
+	if (mCaptureService->WaitOnColorKindOf(&confirmGrandSummonButtonPoint, 10, 0x1B) < 0) {
+		LOGW("confirmGrandSummonButtonPoint not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&confirmGrandSummonButtonPoint.coord);
+	sleep(20);
+
+	//wait for card show up
+	if (mCaptureService->ColorIs(&equipShowButtonPoint)) {
+		mInputService->TapOnScreen(&equipShowButtonPoint.coord);
+		sleep(1);
+	}
+
+	//screenshot
+	snprintf(save_path, 130, "%s/grand%d.png", mCurrentRoot, draw++);
+	mCaptureService->SaveScreenshot(save_path);
+
+	if (draw > 2)
+		return 0;
+
+	if (mCaptureService->WaitOnColorKindOf(&returnSummonButtonPoint, 10, 0x0E) < 0) {
+		LOGW("returnSummonButtonPoint not found.");
+		goto error;
+	}
+	mInputService->TapOnScreen(&returnSummonButtonPoint.coord);
+	sleep(5);
+
+	goto summon;
+
+error:
+	return -1;
+}
+
 
 /*
  * keep_main
@@ -732,61 +812,80 @@ void* keep_main(void* data)
 	//clean log
 	std::system("rm /data/joshtool/loga");
 
-	//make game data directory of this game
-	getCurrentTime(serial, 20);
-	snprintf(mCurrentRoot, 70, "/sdcard/fgo/%s", serial);
-	LOGD("Create session folder %s", mCurrentRoot);
-	snprintf(cmd, 110, "mkdir -p %s", mCurrentRoot);
-	std::system(cmd);
+	while(true) {
+		//make game data directory of this game
+		getCurrentTime(serial, 20);
+		snprintf(mCurrentRoot, 70, "/sdcard/fgo/%s", serial);
+		LOGD("Create session folder %s", mCurrentRoot);
+		snprintf(cmd, 110, "mkdir -p %s", mCurrentRoot);
+		std::system(cmd);
 
-	//start game (you need to confirm game data has cleaned
-	LOGD("Start FGO game");
-	mSettingService->StartFGO();
+		//start game (you need to confirm game data has cleaned
+		LOGD("Start FGO game");
+		mSettingService->StartFGO();
 
-	LOGD("Intro >>>>");
-	ret = intro_presetup();
-	if (ret < 0) goto done;
+		LOGD("Intro >>>>");
+		ret = intro_presetup();
+		if (ret < 0) goto done;
 
-	//wait for all white screen dismissed
-	sleep(8);
-	LOGD("intro_battle >>>> ");
-	ret = intro_battle();
-	if (ret < 0) goto done;
-	sleep(5);
+		//wait for all white screen dismissed
+		sleep(8);
+		LOGD("intro_battle >>>> ");
+		ret = intro_battle();
+		if (ret < 0) goto done;
+		sleep(5);
 
-	LOGD("create character >>>>");
-	ret = create_character();
-	if (ret < 0) goto done;
-	sleep(10);
+		LOGD("create character >>>>");
+		ret = create_character();
+		if (ret < 0) goto done;
+		sleep(10);
 
-	LOGD("XA battle >>>> ");
-	ret = XA_battle();
-	if (ret < 0) goto done;
-	sleep(5);
+		LOGD("XA battle >>>> ");
+		ret = XA_battle();
+		if (ret < 0) goto done;
+		sleep(5);
 
-	LOGD("XB battle >>>> ");
-	ret = XB_battle();
-	if (ret < 0) goto done;
-	sleep(5);
+		LOGD("XB battle >>>> ");
+		ret = XB_battle();
+		if (ret < 0) goto done;
+		sleep(5);
 
-	LOGD("1st 10 summon >>>> ");
-	ret = first_ten_summon();
-	if (ret < 0) goto done;
-	sleep(10);
+		LOGD("1st 10 summon >>>> ");
+		ret = first_ten_summon();
+		if (ret < 0) goto done;
+		sleep(10);
 
-	LOGD("XC-1 >>> ");
-	ret = XC1_battle();
-	if (ret < 0) goto done;
-	sleep(15);
+		LOGD("XC-1 >>> ");
+		ret = XC1_battle();
+		if (ret < 0) goto done;
+		sleep(15);
 
-	LOGD("XC-2 >>> ");
-	ret = XC2_battle(1);
-	if (ret < 0) goto done;
-	sleep(15);
+		LOGD("XC-2 >>> ");
+		ret = XC2_battle(1);
+		if (ret < 0) goto done;
+		sleep(15);
 
-	LOGD("XC-3 >>> ");
-	ret = XC2_battle(0);
-	if (ret < 0) goto done;
+		LOGD("XC-3 >>> ");
+		ret = XC2_battle(0);
+		if (ret < 0) goto done;
+		sleep(12);
+
+		LOGD("Take things out of box");
+		ret = take_out_all_box();
+		if (ret < 0) goto done;
+		sleep(5);
+
+		LOGD("Take things out of box");
+		ret = do_grand_summon();
+		if (ret < 0) goto done;
+		sleep(5);
+
+		LOGD("Save game data (deprecated) ");
+		mSettingService->SaveGameData(mCurrentRoot);
+
+		LOGD("Kill game, and rest for 10 seconds");
+		mSettingService->KillFGO();
+	}
 
 done:
 	mSettingService->PlaySound(1);
