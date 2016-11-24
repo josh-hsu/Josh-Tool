@@ -33,6 +33,8 @@
 #include "FGO.h"
 #include "fgo_720p_script.h"
 
+char mCurrentRoot[70];
+
 FGO::FGO() {
 
 	/* initialize of CoreThread */
@@ -218,30 +220,27 @@ int battle_once(int session)
 	if (session == 1) {
 		if (mCaptureService->ColorIs(&touchDismissButtonPoint))
 			mInputService->TapOnScreen(&touchDismissButtonPoint.coord);
-		sleep(1);
-	}
-
-	if (session == 3) {
+	} else if (session == 3) {
 		sleep(1);
 		mInputService->TapOnScreen(&speedUpButtonPoint.coord, 3);
-		sleep(2);
-	}
-
-	if (session == 4) {
+	} else if (session == 4) {
 		sleep(1);
 		mInputService->TapOnScreen(&tapMosterTextPoint.coord);
 		mInputService->TapOnScreen(&tapMosterButtonPoint.coord);
-		sleep(2);
 	}
+
+	sleep(2);
 
 	if (session != 2) {
 		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 	} else {
 		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
 	}
 	LOGD("battle once done");
 	return 0;
@@ -305,7 +304,7 @@ battle_done:
  */
 int intro_presetup(void)
 {
-	if (mCaptureService->WaitOnColor(&homePageButtonPoint, 50) < 0) {
+	if (mCaptureService->WaitOnColor(&homePageButtonPoint, 250) < 0) {
 		LOGW("not in home page.");
 		goto error;
 	}
@@ -405,7 +404,7 @@ int XA_battle(void)
 	mInputService->TapOnScreen(&enterZone1ButtonPoint.coord);
 	sleep(2);
 
-	if (mCaptureService->WaitOnColor(&enterZone1SubButtonPoint, 10) < 0) {
+	if (mCaptureService->WaitOnColorKindOf(&enterZone1SubButtonPoint, 10, 0x10) < 0) {
 		LOGW("zone 1 sub button not found.");
 		goto error;
 	}
@@ -467,7 +466,7 @@ int XB_battle(void)
 	sleep(2);
 	mInputService->TapOnScreen(&enterZone2ButtonPoint.coord);
 
-	if (mCaptureService->WaitOnColor(&enterZone2SubButtonPoint, 20) < 0) {
+	if (mCaptureService->WaitOnColorKindOf(&enterZone2SubButtonPoint, 20, 0x10) < 0) {
 		LOGW("zone 1 sub button not found.");
 		goto error;
 	}
@@ -513,6 +512,9 @@ int first_ten_summon(void)
 {
 	int ret = 0;
 	int max_round = 82000;
+	char screenshot_path[250];
+
+	snprintf(screenshot_path, 250, "%s/ten.png", mCurrentRoot);
 
 	if (mCaptureService->WaitOnColor(&menuButtonPoint, 10) < 0) {
 		LOGW("menuButtonPoint not found.");
@@ -534,6 +536,7 @@ int first_ten_summon(void)
 		max_round--;
 	}
 	LOGD("end waiting");
+	mCaptureService->SaveScreenshot(screenshot_path);
 	sleep(1);
 	mInputService->TapOnScreen(&summonDoneSummonButtonPoint.coord, 2);
 	sleep(1);
@@ -582,7 +585,7 @@ int XC1_battle(void)
 	sleep(2);
 	mInputService->TapOnScreen(&enterZone3ButtonPoint.coord);
 
-	if (mCaptureService->WaitOnColor(&enterZone3SubButtonPoint, 10) < 0) {
+	if (mCaptureService->WaitOnColorKindOf(&enterZone3SubButtonPoint, 10, 0x10) < 0) {
 		LOGW("zone 3 sub not found.");
 		goto error;
 	}
@@ -639,7 +642,7 @@ int XC2_battle(int speed_up)
 {
 	int ret = 0;
 
-	if (mCaptureService->WaitOnColor(&enterZone3SubButtonPoint, 30) < 0) {
+	if (mCaptureService->WaitOnColorKindOf(&enterZone3SubButtonPoint, 30, 0x10) < 0) {
 		LOGW("zone 3 sub not found.");
 		goto error;
 	}
@@ -698,6 +701,8 @@ int take_out_all_box(void)
 {
 	int ret = 0;
 
+	// need to be sure that we can take out things from box
+
 	if (mCaptureService->WaitOnColor(&giftBoxButtonPoint, 40) < 0) {
 		LOGW("gift box button not found.");
 		goto error;
@@ -721,10 +726,24 @@ error:
 void* keep_main(void* data)
 {
 	int ret;
+	char serial[20];
+	char cmd[110];
 
 	//clean log
-	std::system("rm /data/joshtool/log*");
+	std::system("rm /data/joshtool/loga");
 
+	//make game data directory of this game
+	getCurrentTime(serial, 20);
+	snprintf(mCurrentRoot, 70, "/sdcard/fgo/%s", serial);
+	LOGD("Create session folder %s", mCurrentRoot);
+	snprintf(cmd, 110, "mkdir -p %s", mCurrentRoot);
+	std::system(cmd);
+
+	//start game (you need to confirm game data has cleaned
+	LOGD("Start FGO game");
+	mSettingService->StartFGO();
+
+	LOGD("Intro >>>>");
 	ret = intro_presetup();
 	if (ret < 0) goto done;
 

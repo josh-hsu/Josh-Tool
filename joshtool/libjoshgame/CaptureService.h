@@ -74,6 +74,8 @@ class CaptureService {
 	bool ColorCompare(ScreenColor *src, ScreenColor *dest);
 	bool ColorCompare(ScreenColor *src, ScreenColor *dest, int thres);
 
+	/* save screenshot */
+	void SaveScreenshot(const char* filepath);
 
   //private:
 	void DumpScreen(const char* filename);

@@ -153,3 +153,13 @@ void SettingService::PlaySound(int i)
 {
 	std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/ogg\" -d \"file:///storage/sdcard0/Ringtones/hangouts_incoming_call.ogg\"");
 }
+
+void SettingService::KillFGO()
+{
+	std::system("am force-stop com.aniplex.fategrandorder");
+}
+
+void SettingService::StartFGO()
+{
+	std::system("am start \"com.aniplex.fategrandorder/jp.delightworks.Fgo.player.AndroidPlugin\"");
+}

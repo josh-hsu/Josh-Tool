@@ -47,12 +47,16 @@ enum Settings {
 class SettingService {
   public:
 	SettingService();
-	
+
 	bool GetBool(Settings setting, bool default_value);
 	int GetInt(Settings setting, int default_value);
 	char* GetString(Settings setting, const char* default_value);
-	
+
 	void PlaySound(int type);
+
+	//FGO specific function
+	void KillFGO(void);
+	void StartFGO(void);
 
   private:
 	void PrepareSettings(void);

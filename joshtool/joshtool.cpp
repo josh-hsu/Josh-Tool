@@ -136,9 +136,10 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 		break;
 	case EVENT_VOLUMN_DOWN_LONG_LONG_PRESSED:
 		LOGD("volumn down long long pressed, clean data.");
-		std::system("mkdir -p /sdcard/fgo/accounts");
-		std::system("mv -f /data/data/com.aniplex.fategrandorder/files/*.dat /sdcard/fgo/accounts/");
-		std::system("mv -f /data/data/com.aniplex.fategrandorder/shared_prefs/* /sdcard/fgo/accounts/");
+		std::system("mkdir -p /sdcard/fgo/ryan/files");
+		std::system("mkdir -p /sdcard/fgo/ryan/shared_prefs");
+		std::system("mv -f /data/data/com.aniplex.fategrandorder/files/*.dat /sdcard/fgo/ryan/files/");
+		std::system("mv -f /data/data/com.aniplex.fategrandorder/shared_prefs/* /sdcard/fgo/ryan/shared_prefs/");
 		std::system("am start -a \"android.intent.action.VIEW\" -t \"audio/ogg\" -d \"file:///storage/sdcard0/Ringtones/hangouts_incoming_call.ogg\"");
 		break;
 	case EVENT_POWER_KEY_PRESSED:

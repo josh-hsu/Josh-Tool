@@ -48,6 +48,13 @@ void CaptureService::DumpScreen(void)
 	std::system("screencap " INTERNAL_DUMP_FILE);
 }
 
+void CaptureService::SaveScreenshot(const char* filepath)
+{
+	char cap_command[250];
+	snprintf(cap_command, 250, "screencap -p %s", filepath);
+	std::system(cap_command);
+}
+
 void CaptureService::GetColorOnDumpInternal(ScreenColor* sc, const char* filename, ScreenCoord* coord)
 {
 	FILE* dumpFile = fopen(INTERNAL_DUMP_FILE, "r+");
@@ -96,6 +103,8 @@ int CaptureService::WaitOnColor(ScreenColor* sc, ScreenCoord* coord, int thres)
 			sleep(1);
 		}
 	}
+	LOGD("CaptureService: color not found, last one is %x,%x,%x",
+		currentColor.r, currentColor.g, currentColor.b);
 
 	return -1;
 }
@@ -116,6 +125,8 @@ int CaptureService::WaitOnColorKindOf(ScreenColor* sc,
 			sleep(1);
 		}
 	}
+	LOGD("CaptureService: color not found, last one is %x,%x,%x",
+		sc->r, sc->g, sc->b);
 
 	return -1;
 }
