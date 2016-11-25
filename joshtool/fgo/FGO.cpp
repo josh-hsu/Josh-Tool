@@ -762,6 +762,7 @@ summon:
 		LOGW("onTimeDrawButtonPoint not found.");
 		goto error;
 	}
+	sleep(1);
 	mInputService->TapOnScreen(&onTimeDrawButtonPoint.coord);
 	sleep(1);
 
@@ -769,6 +770,7 @@ summon:
 		LOGW("confirmGrandSummonButtonPoint not found.");
 		goto error;
 	}
+	sleep(1);
 	mInputService->TapOnScreen(&confirmGrandSummonButtonPoint.coord);
 	sleep(5);
 

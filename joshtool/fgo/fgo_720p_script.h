@@ -199,7 +199,7 @@ struct ScreenPoint cancelSummonTutorButtonPoint = {{689, 1246, SO_Portrait}, {0x
 struct ScreenPoint goToStoryButtonPoint = {{362, 1228, SO_Portrait}, noColor};
 struct ScreenPoint onTimeDrawButtonPoint = {{144, 437, SO_Portrait}, {0x63, 0x5E, 0x0D, 0x00}};
 struct ScreenPoint confirmGrandSummonButtonPoint = {{164, 807, SO_Portrait}, {0x62, 0x62, 0x62, 0x00}};
-struct ScreenPoint blindingTouchButtonPoint = {{164, 807, SO_Portrait}, noColor};
+struct ScreenPoint blindingTouchButtonPoint = {{164, 1120, SO_Portrait}, noColor};
 struct ScreenPoint equipShowButtonPoint = {{690, 1245, SO_Portrait}, {0x2A, 0x33, 0x6C, 0x00}};
 struct ScreenPoint returnSummonButtonPoint = {{680, 40, SO_Portrait}, {0x31, 0x31, 0x63, 0x00}};
 
