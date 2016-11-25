@@ -308,6 +308,7 @@ int intro_presetup(void)
 		LOGW("not in home page.");
 		goto error;
 	}
+	sleep(2); //to prevent pressing button too early
 
 	// tap on screen to create an id
 	mInputService->TapOnScreen(&homePageButtonPoint.coord, 5);
@@ -350,6 +351,7 @@ int intro_battle(void)
 	ret = battle_once(2);
 	if (ret < 0) goto error;
 
+	sleep(3); //workaround for probably stucking
 	ret = check_for_skip();
 	if (ret < 0) goto error;
 
@@ -731,7 +733,7 @@ int do_grand_summon(void)
 	char save_path[130];
 
 	if (mCaptureService->WaitOnColorKindOf(&menu2ButtonPoint, 40, 0x09) < 0) {
-		LOGW("menu button not found.");
+		LOGW("menu 2 button not found.");
 		goto error;
 	}
 	mInputService->TapOnScreen(&menu2ButtonPoint.coord);
@@ -768,27 +770,33 @@ summon:
 		goto error;
 	}
 	mInputService->TapOnScreen(&confirmGrandSummonButtonPoint.coord);
-	sleep(20);
+	sleep(5);
 
+check_again:
 	//wait for card show up
 	if (mCaptureService->ColorIs(&equipShowButtonPoint)) {
 		mInputService->TapOnScreen(&equipShowButtonPoint.coord);
 		sleep(1);
+	} else if (mCaptureService->ColorIs(&returnSummonButtonPoint)) {
+		//we may have a servant summoned
+		if (mCaptureService->ColorIs(&equipShowButtonPoint))
+			mInputService->TapOnScreen(&equipShowButtonPoint.coord);
+		sleep(1);
+	} else {
+		mInputService->TapOnScreen(&blindingTouchButtonPoint.coord);
+		sleep(1);
+		goto check_again;
 	}
 
 	//screenshot
 	snprintf(save_path, 130, "%s/grand%d.png", mCurrentRoot, draw++);
 	mCaptureService->SaveScreenshot(save_path);
 
-	if (draw > 2)
-		return 0;
-
-	if (mCaptureService->WaitOnColorKindOf(&returnSummonButtonPoint, 10, 0x0E) < 0) {
-		LOGW("returnSummonButtonPoint not found.");
-		goto error;
-	}
 	mInputService->TapOnScreen(&returnSummonButtonPoint.coord);
 	sleep(5);
+
+	if (draw > 2)
+	return 0;
 
 	goto summon;
 
@@ -905,7 +913,16 @@ done:
 void* keep_xb(void* data)
 {
 	int ret;
-	ret = XC1_battle();
+	char serial[20];
+	char cmd[110];
+
+	//make game data directory of this game
+	getCurrentTime(serial, 20);
+	snprintf(mCurrentRoot, 70, "/sdcard/fgo/%s", serial);
+	LOGD("Create session folder %s", mCurrentRoot);
+	snprintf(cmd, 110, "mkdir -p %s", mCurrentRoot);
+	std::system(cmd);
+	ret = do_grand_summon();
 	if (ret < 0) goto done;
 
 done:

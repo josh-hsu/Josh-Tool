@@ -126,7 +126,7 @@ int CaptureService::WaitOnColorKindOf(ScreenColor* sc,
 		}
 	}
 	LOGD("CaptureService: color not found, last one is %x,%x,%x",
-		sc->r, sc->g, sc->b);
+		currentColor.r, currentColor.g, currentColor.b);
 
 	return -1;
 }

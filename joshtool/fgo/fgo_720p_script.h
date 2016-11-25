@@ -193,23 +193,17 @@ struct ScreenPoint CloseBoxButtonPoint = {{679, 75, SO_Portrait}, {0x16, 0x1A, 0
 /*
  * Grand Summon
  */
-struct ScreenPoint menu2ButtonPoint = {{35, 1165, SO_Portrait}, {0x40, 0x1F, 0x17, 0x00}};
-struct ScreenPoint menuSummonButtonPoint = {{75, 536, SO_Portrait}, {0xB5, 0x42, 0x31, 0x00}};
-struct ScreenPoint cancelSummonTutorButtonPoint = {{689, 1246, SO_Portrait}, {0x6D, 0x34, 0x2B, 0x00}};
+struct ScreenPoint menu2ButtonPoint = {{35, 1165, SO_Portrait}, {0x17, 0x1F, 0x40, 0x00}};
+struct ScreenPoint menuSummonButtonPoint = {{75, 536, SO_Portrait}, {0x31, 0x42, 0xB5, 0x00}};
+struct ScreenPoint cancelSummonTutorButtonPoint = {{689, 1246, SO_Portrait}, {0x2B, 0x34, 0x6D, 0x00}};
 struct ScreenPoint goToStoryButtonPoint = {{362, 1228, SO_Portrait}, noColor};
-struct ScreenPoint onTimeDrawButtonPoint = {{144, 437, SO_Portrait}, {0x0D, 0x5E, 0x63, 0x00}};
+struct ScreenPoint onTimeDrawButtonPoint = {{144, 437, SO_Portrait}, {0x63, 0x5E, 0x0D, 0x00}};
 struct ScreenPoint confirmGrandSummonButtonPoint = {{164, 807, SO_Portrait}, {0x62, 0x62, 0x62, 0x00}};
-struct ScreenPoint equipShowButtonPoint = {{690, 1245, SO_Portrait}, {0x6C, 0x33, 0x2A, 0x00}};
-struct ScreenPoint returnSummonButtonPoint = {{680, 40, SO_Portrait}, {0x63, 0x31, 0x31, 0x00}};
+struct ScreenPoint blindingTouchButtonPoint = {{164, 807, SO_Portrait}, noColor};
+struct ScreenPoint equipShowButtonPoint = {{690, 1245, SO_Portrait}, {0x2A, 0x33, 0x6C, 0x00}};
+struct ScreenPoint returnSummonButtonPoint = {{680, 40, SO_Portrait}, {0x31, 0x31, 0x63, 0x00}};
+
 
 /*
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
-struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
 struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
 */

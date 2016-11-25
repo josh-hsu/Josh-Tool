@@ -145,6 +145,7 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 	case EVENT_POWER_KEY_PRESSED:
 		LOGD("power key hit.");
 		mFGO->StopJob(0);
+		mFGO->StopJob(1);
 		mInputService->ConfigTouchScreen(true);
 		break;
 	default:
