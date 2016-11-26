@@ -214,14 +214,25 @@ int battle_once(int session)
 		LOGW("draw card battle button not found.");
 		goto error;
 	}
+	sleep(2); //fix for some inconsistency
 
 	mInputService->TapOnScreen(&drawCardButtonPoint.coord, 13);
-	sleep(2);
+	sleep(3);
+
+	//check if we did press the draw card button for once
+	if (mCaptureService->ColorIs(&drawCardButtonPoint)) {
+		LOGW("draw card battle button still here press it again for gods sake");
+		mInputService->TapOnScreen(&drawCardButtonPoint.coord, 13);
+		sleep(2);
+	}
+
 	if (session == 1) {
-		if (mCaptureService->ColorIs(&touchDismissButtonPoint))
+		if (mCaptureService->ColorIs(&touchDismissButtonPoint)) {
+			sleep(2);
 			mInputService->TapOnScreen(&touchDismissButtonPoint.coord);
+		}
 	} else if (session == 3) {
-		sleep(1);
+		sleep(2);
 		mInputService->TapOnScreen(&speedUpButtonPoint.coord, 3);
 	} else if (session == 4) {
 		sleep(1);
@@ -236,11 +247,21 @@ int battle_once(int session)
 		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
 	} else {
 		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&royalCardButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+		mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 	}
 	LOGD("battle once done");
 	return 0;
@@ -261,9 +282,24 @@ int battle_till_finish(ScreenPoint* match)
 	while(battle_time_second > 0) {
 		if (mCaptureService->ColorIs(&drawCardButtonPoint)) {
 			//battle point
+			sleep(1);
 			mInputService->TapOnScreen(&drawCardButtonPoint.coord, 15);
 			sleep(2);
 
+			//check if we did press the draw card button for once
+			if (mCaptureService->ColorIs(&drawCardButtonPoint)) {
+				sleep(1);
+				LOGW("draw card battle button still here press it again for gods sake");
+				mInputService->TapOnScreen(&drawCardButtonPoint.coord, 13);
+				sleep(2);
+			}
+
+			mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
+			sleep(1);
+			mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
+			sleep(1);
+			mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
+			sleep(1);
 			mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 			mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 			mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
@@ -304,7 +340,22 @@ battle_done:
  */
 int intro_presetup(void)
 {
-	if (mCaptureService->WaitOnColor(&homePageButtonPoint, 250) < 0) {
+	int max_wait_time = 250;
+
+	while (!mCaptureService->ColorIs(&homePageButtonPoint)) {
+		// if server cannot let us create new account delay a little bit
+		if (mCaptureService->ColorIs(&serverErrorButtonPoint)) {
+			LOGW("server error, wait for 15 ms");
+			sleep(15);
+			mInputService->TapOnScreen(&serverErrorButtonPoint.coord, 5);
+			mSettingService->KillFGO();
+			return -9;
+		}
+		sleep(1);
+		max_wait_time--;
+	}
+
+	if (max_wait_time == 0) {
 		LOGW("not in home page.");
 		goto error;
 	}
@@ -351,7 +402,7 @@ int intro_battle(void)
 	ret = battle_once(2);
 	if (ret < 0) goto error;
 
-	sleep(3); //workaround for probably stucking
+	sleep(30); //workaround for probably stucking
 	ret = check_for_skip();
 	if (ret < 0) goto error;
 
@@ -687,6 +738,9 @@ int XC2_battle(int speed_up)
 		sleep(8);
 
 		// tap info
+		if (mCaptureService->WaitOnColor(&welcomeCloseButtonPoint, 10) < 0) {
+			LOGW("welcomeCloseButtonPoint not found.");
+		}
 		mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord, 3);
 	}
 
@@ -705,17 +759,25 @@ int take_out_all_box(void)
 
 	// need to be sure that we can take out things from box
 
-	if (mCaptureService->WaitOnColor(&giftBoxButtonPoint, 40) < 0) {
+	if (mCaptureService->WaitOnColorKindOf(&giftBoxButtonPoint, 40, 0x0A) < 0) {
 		LOGW("gift box button not found.");
 		goto error;
 	}
 	sleep(5);
 	mInputService->TapOnScreen(&giftBoxButtonPoint.coord);
-	sleep(3);
 
+	if (mCaptureService->WaitOnColorKindOf(&takeOutAllButtonPoint, 40, 0x0A) < 0) {
+		LOGW("takeOutAllButtonPoint not found.");
+		goto error;
+	}
+	sleep(5);
 	mInputService->TapOnScreen(&takeOutAllButtonPoint.coord);
-	sleep(3);
 
+	if (mCaptureService->WaitOnColorKindOf(&CloseBoxButtonPoint, 40, 0x0A) < 0) {
+		LOGW("CloseBoxButtonPoint not found.");
+		goto error;
+	}
+	sleep(5);
 	mInputService->TapOnScreen(&CloseBoxButtonPoint.coord);
 	sleep(10);
 	return 0;
@@ -730,6 +792,7 @@ int do_grand_summon(void)
 {
 	int ret = 0;
 	int draw = 1;
+	int checktime = 40; //only tap 40 times to check back button, skip it when the same draw
 	char save_path[130];
 
 	if (mCaptureService->WaitOnColorKindOf(&menu2ButtonPoint, 40, 0x09) < 0) {
@@ -757,6 +820,7 @@ int do_grand_summon(void)
 	sleep(3);
 
 summon:
+	checktime = 40;
 	LOGD("Draw grand %d", draw);
 	if (mCaptureService->WaitOnColorKindOf(&onTimeDrawButtonPoint, 10, 0x1B) < 0) {
 		LOGW("onTimeDrawButtonPoint not found.");
@@ -774,32 +838,45 @@ summon:
 	mInputService->TapOnScreen(&confirmGrandSummonButtonPoint.coord);
 	sleep(5);
 
-check_again:
 	//wait for card show up
-	if (mCaptureService->ColorIs(&equipShowButtonPoint)) {
-		mInputService->TapOnScreen(&equipShowButtonPoint.coord);
-		sleep(1);
-	} else if (mCaptureService->ColorIs(&returnSummonButtonPoint)) {
-		//we may have a servant summoned
-		if (mCaptureService->ColorIs(&equipShowButtonPoint))
+	while(checktime > 0) {
+		if (mCaptureService->ColorKindOf(&equipShowButtonPoint, 0x0F)) {
+			sleep(5);
 			mInputService->TapOnScreen(&equipShowButtonPoint.coord);
-		sleep(1);
-	} else {
-		mInputService->TapOnScreen(&blindingTouchButtonPoint.coord);
-		sleep(1);
-		goto check_again;
+			sleep(1);
+			break;
+		} else if (mCaptureService->ColorKindOf(&returnSummonButtonPoint, 0x04)) {
+			//we may have a servant summoned
+			sleep(5);
+			if (mCaptureService->ColorKindOf(&equipShowButtonPoint, 0x0F))
+				mInputService->TapOnScreen(&equipShowButtonPoint.coord);
+			sleep(1);
+			break;
+		} else if (mCaptureService->ColorKindOf(&closeSummonButtonPoint, 0x0E)) {
+			//this is duplicated card
+			checktime = 0;
+			break;
+		} else {
+			mInputService->TapOnScreen(&blindingTouchButtonPoint.coord);
+			sleep(1);
+			checktime--;
+		}
 	}
 
 	//screenshot
 	snprintf(save_path, 130, "%s/grand%d.png", mCurrentRoot, draw++);
 	mCaptureService->SaveScreenshot(save_path);
 
-	mInputService->TapOnScreen(&returnSummonButtonPoint.coord);
-	sleep(5);
+	if (checktime <= 0) {
+		LOGW("We may get a old card, dismiss it.");
+	} else {
+		mInputService->TapOnScreen(&returnSummonButtonPoint.coord);
+	}
 
 	if (draw > 2)
-	return 0;
+		return 0;
 
+	sleep(5);
 	goto summon;
 
 error:
@@ -830,13 +907,15 @@ void* keep_main(void* data)
 		snprintf(cmd, 110, "mkdir -p %s", mCurrentRoot);
 		std::system(cmd);
 
+try_create_account_again:
 		//start game (you need to confirm game data has cleaned
 		LOGD("Start FGO game");
 		mSettingService->StartFGO();
 
 		LOGD("Intro >>>>");
 		ret = intro_presetup();
-		if (ret < 0) goto done;
+		if (ret == -1) goto done;
+		if (ret == -9) goto try_create_account_again;
 
 		//wait for all white screen dismissed
 		sleep(8);

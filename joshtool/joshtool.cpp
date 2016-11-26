@@ -183,6 +183,11 @@ void loop_forever(void)
 
 int main(int argc, char **argv)
 {
+	if (argc > 1) {
+		printf("Josh Tool ------- Version: 1.29 \n");
+		return 0;
+	}
+
 	init();
 	loop_forever();
 

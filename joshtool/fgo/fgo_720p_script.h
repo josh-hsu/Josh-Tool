@@ -16,6 +16,7 @@ struct ScreenColor noColor = {0x00, 0x00, 0x00, NO_COLOR_T};
 /*
  * Pre-setup
  */
+struct ScreenPoint serverErrorButtonPoint = {{156, 628, SO_Portrait}, {0x90, 0x90, 0x90, 0x00}};
 struct ScreenPoint homePageButtonPoint = {{108, 876, SO_Portrait}, {0x01, 0x3F, 0xA4, 0x00}};
 struct ScreenPoint agreementButtonPoint = {{171, 769, SO_Portrait}, {0x10, 0x10, 0x10, 0x00}};
 struct ScreenPoint loadingTextPoint = {{523, 591, SO_Portrait}, {0xD2, 0xB3, 0x89, 0x00}};
@@ -201,8 +202,9 @@ struct ScreenPoint onTimeDrawButtonPoint = {{144, 437, SO_Portrait}, {0x63, 0x5E
 struct ScreenPoint confirmGrandSummonButtonPoint = {{164, 807, SO_Portrait}, {0x62, 0x62, 0x62, 0x00}};
 struct ScreenPoint blindingTouchButtonPoint = {{164, 1120, SO_Portrait}, noColor};
 struct ScreenPoint equipShowButtonPoint = {{690, 1245, SO_Portrait}, {0x2A, 0x33, 0x6C, 0x00}};
-struct ScreenPoint returnSummonButtonPoint = {{680, 40, SO_Portrait}, {0x31, 0x31, 0x63, 0x00}};
+struct ScreenPoint returnSummonButtonPoint = {{675, 27, SO_Portrait}, {0x2E, 0x34, 0x3B, 0x00}};
 
+struct ScreenPoint closeSummonButtonPoint = {{679, 132, SO_Portrait}, {0x64, 0x72, 0x8A, 0x00}};
 
 /*
 struct ScreenPoint ButtonPoint = {{, , SO_Portrait}, {0x, 0x, 0x, 0x00}};
