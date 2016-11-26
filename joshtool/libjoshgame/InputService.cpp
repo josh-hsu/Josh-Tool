@@ -306,7 +306,7 @@ static void dc_event_handler(device_callbacks* dc, void* self, void* caller,
 
 		if (event_code == KEY_VOLUMEDOWN && event_data == 0) {
 			time(&current_time);
-			if (difftime(current_time, key_jiffies[2]) >= 5)
+			if (difftime(current_time, key_jiffies[2]) >= 3)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_LONG_LONG_PRESSED);
 			else if (difftime(current_time, key_jiffies[2]) >= 2)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_LONG_PRESSED);
@@ -314,7 +314,7 @@ static void dc_event_handler(device_callbacks* dc, void* self, void* caller,
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_DOWN_PRESSED);
 		} else if (event_code == KEY_VOLUMEUP && event_data == 0) {
 			time(&current_time);
-			if (difftime(current_time, key_jiffies[1]) >= 5)
+			if (difftime(current_time, key_jiffies[1]) >= 3)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_UP_LONG_LONG_PRESSED);
 			else if (difftime(current_time, key_jiffies[1]) >= 2)
 				inputService->mCallbacks->event_handler(inputService->mCallbacks, EVENT_VOLUMN_UP_LONG_PRESSED);

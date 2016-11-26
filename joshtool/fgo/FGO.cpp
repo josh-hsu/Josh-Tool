@@ -182,6 +182,8 @@ press_again:
 			goto error;
 		}
 	}
+	sleep(2);
+	mInputService->TapOnScreen(&confirmSkipButtonPoint.coord, 4);
 	mInputService->TapOnScreen(&confirmSkipButtonPoint.coord, 4);
 	LOGD("confirm pressed.");
 	return 0;
@@ -202,6 +204,7 @@ error:
 int battle_once(int session)
 {
 	if (session == 4) {
+		sleep(5);
 		if (mCaptureService->WaitOnColor(&tapMosterTextPoint, 10) < 0) {
 			LOGW("cannot tap moster to switch them. do it anyway.");
 		}
@@ -219,6 +222,7 @@ int battle_once(int session)
 	mInputService->TapOnScreen(&drawCardButtonPoint.coord, 13);
 	sleep(3);
 
+draw_card:
 	//check if we did press the draw card button for once
 	if (mCaptureService->ColorIs(&drawCardButtonPoint)) {
 		LOGW("draw card battle button still here press it again for gods sake");
@@ -235,9 +239,15 @@ int battle_once(int session)
 		sleep(2);
 		mInputService->TapOnScreen(&speedUpButtonPoint.coord, 3);
 	} else if (session == 4) {
-		sleep(1);
-		mInputService->TapOnScreen(&tapMosterTextPoint.coord);
-		mInputService->TapOnScreen(&tapMosterButtonPoint.coord);
+		if (mCaptureService->WaitOnColor(&tapMosterTextPoint, 10) < 0) {
+			LOGD("cannot find tap moster to switch them. we have done before.");
+		} else {
+			sleep(1);
+			mInputService->TapOnScreen(&tapMosterTextPoint.coord);
+			mInputService->TapOnScreen(&tapMosterButtonPoint.coord);
+			session = 0;
+			goto draw_card;
+		}
 	}
 
 	sleep(2);
@@ -275,7 +285,7 @@ error:
  */
 int battle_till_finish(ScreenPoint* match)
 {
-	int battle_time_second = 120;
+	int battle_time_second = 180;
 	int ret = 0;
 
 	LOGD("battle till finish +++ ");
@@ -303,7 +313,7 @@ int battle_till_finish(ScreenPoint* match)
 			mInputService->TapOnScreen(&card1ButtonPoint.coord, 4, 12);
 			mInputService->TapOnScreen(&card2ButtonPoint.coord, 4, 12);
 			mInputService->TapOnScreen(&card3ButtonPoint.coord, 4, 12);
-			battle_time_second = 120;
+			battle_time_second = 180;
 		} else if (mCaptureService->ColorIs(match)) {
 			goto battle_done;
 		}
@@ -385,7 +395,7 @@ int intro_battle(void)
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(5);
+	sleep(40); //enter battle may take a long time
 
 	ret = battle_once(0);
 	if (ret < 0) goto error;
@@ -448,19 +458,25 @@ error:
 int XA_battle(void)
 {
 	int ret = 0;
+	int tap_count = 10;
 
+tap_again:
 	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
 		LOGW("not in zone selection.");
 		goto error;
 	}
-	sleep(6);
+	sleep(1);
 	mInputService->TapOnScreen(&enterZone1ButtonPoint.coord);
 	sleep(2);
 
-	if (mCaptureService->WaitOnColorKindOf(&enterZone1SubButtonPoint, 10, 0x10) < 0) {
-		LOGW("zone 1 sub button not found.");
-		goto error;
+	if (!mCaptureService->ColorKindOf(&enterZone1SubButtonPoint, 0x10)) {
+		LOGW("zone 1 sub button not found. tap zone again");
+		if (tap_count-- > 0)
+			goto tap_again;
+		else
+			goto error;
 	}
+	sleep(2);
 	mInputService->TapOnScreen(&enterZone1SubButtonPoint.coord, 2, 5);
 	sleep(5);
 
@@ -511,17 +527,23 @@ error:
 int XB_battle(void)
 {
 	int ret = 0;
+	int tap_count = 10;
 
+tap_again:
 	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
 		LOGW("not in zone selection.");
 		goto error;
 	}
-	sleep(6);
+	sleep(1);
 	mInputService->TapOnScreen(&enterZone2ButtonPoint.coord);
+	sleep(2);
 
-	if (mCaptureService->WaitOnColorKindOf(&enterZone2SubButtonPoint, 20, 0x10) < 0) {
-		LOGW("zone 1 sub button not found.");
-		goto error;
+	if (!mCaptureService->ColorKindOf(&enterZone2SubButtonPoint, 0x10)) {
+		LOGW("zone 2 sub button not found. tap zone again");
+		if (tap_count-- > 0)
+			goto tap_again;
+		else
+			goto error;
 	}
 	sleep(2);
 	mInputService->TapOnScreen(&enterZone2SubButtonPoint.coord, 3);
@@ -629,20 +651,24 @@ error:
 int XC1_battle(void)
 {
 	int ret = 0;
+	int tap_count = 10;
 
+tap_again:
 	if (mCaptureService->WaitOnColorKindOf(&inZoneSelectionPoint, 90, 0x10) < 0) {
 		LOGW("not in zone selection.");
 		goto error;
 	}
-	LOGD("Enter zone selection");
-	sleep(2);
+	sleep(1);
 	mInputService->TapOnScreen(&enterZone3ButtonPoint.coord);
+	sleep(2);
 
-	if (mCaptureService->WaitOnColorKindOf(&enterZone3SubButtonPoint, 10, 0x10) < 0) {
-		LOGW("zone 3 sub not found.");
-		goto error;
+	if (!mCaptureService->ColorKindOf(&enterZone2SubButtonPoint, 0x10)) {
+		LOGW("zone 3 sub button not found. tap zone again");
+		if (tap_count-- > 0)
+			goto tap_again;
+		else
+			goto error;
 	}
-	LOGD("Enter zone 3 sub found");
 	sleep(2);
 	mInputService->TapOnScreen(&enterZone3SubButtonPoint.coord, 2);
 	sleep(3);
@@ -676,9 +702,13 @@ int XC1_battle(void)
 
 	ret = check_for_skip();
 	if (ret < 0) goto error;
-	sleep(13);
+	sleep(20);
 
-	//need change, sometime it will not change
+	//need change, sometime it will not show up
+	if (mCaptureService->WaitOnColor(&welcomeCloseButtonPoint, 40) < 0) {
+		LOGW("welcomeCloseButtonPoint not found.");
+	}
+	sleep(1);
 	mInputService->TapOnScreen(&welcomeCloseButtonPoint.coord, 2);
 	sleep(3);
 

@@ -34,7 +34,7 @@
 #include "fgo/FGO.h"
 
 bool capture_mode_enable = false;
-static bool event_handle_in_progress = false;
+static int event_handle_in_progress = 0;
 
 SettingService* mSettingService;
 InputService* mInputService;
@@ -102,12 +102,12 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 			dump_screen();
 			break;
 		} else if (!event_handle_in_progress) {
-			event_handle_in_progress = true;
+			event_handle_in_progress = 1;
 
 			//job here
 			mFGO->StartJob(0);
 
-			event_handle_in_progress = false;
+			event_handle_in_progress = 0;
 		}
 
 		break;
@@ -117,12 +117,12 @@ void ic_event_handler(input_callbacks* ic, CallbackEvent event)
 			LOGD("capture mode enabled, do dump screen.");
 			dump_screen();
 		} else if (!event_handle_in_progress) {
-			event_handle_in_progress = true;
+			event_handle_in_progress = 1;
 
 			// job here
 			mFGO->StartJob(0);
 
-			event_handle_in_progress = false;
+			event_handle_in_progress = 0;
 		}
 
 		break;
